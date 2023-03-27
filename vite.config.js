@@ -12,7 +12,7 @@ function mutateCookieAttributes (proxy) {
   proxy.on('proxyRes', function (proxyRes, req, res) {
     if (proxyRes.headers['set-cookie']) {
       proxyRes.headers['set-cookie'] = (proxyRes.headers['set-cookie']).map(h => {
-        return h.replace(/Domain=.*;/, 'Domain=localhost;').replace(/Secure; /, '')
+        return h.replace(/Domain=.*;/, 'Domain=localhost; Secure;')
       })
     }
   })
