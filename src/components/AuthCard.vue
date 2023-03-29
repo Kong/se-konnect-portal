@@ -11,7 +11,7 @@
           <router-link :to="`/login`">
             <img
               class="logo"
-              src="/portal_assets/logo"
+              :src="logoSrc"
               alt="logo"
             >
           </router-link>
@@ -24,10 +24,21 @@
 </template>
 
 <script>
+import usePortalApi from '@/hooks/usePortalApi'
 
 export default {
-  name: 'AuthCard'
+  name: 'AuthCard',
+  setup () {
+    const { portalApi } = usePortalApi()
+
+    const logoSrc = portalApi.value.getApiLink('/portal_assets/logo')
+
+    return {
+      logoSrc
+    }
+  }
 }
+
 </script>
 
 <style lang="scss" scoped>

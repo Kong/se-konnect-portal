@@ -30,6 +30,7 @@
 import { storeToRefs } from 'pinia'
 import { defineComponent, computed, onBeforeMount } from 'vue'
 import { useRouter } from 'vue-router'
+import usePortalApi from '@/hooks/usePortalApi'
 import AuthCard from '../components/AuthCard'
 import { useI18nStore, useAppStore } from '@/stores'
 
@@ -45,6 +46,7 @@ export default defineComponent({
     const appStore = useAppStore()
     const { authClientConfig } = storeToRefs(appStore)
     const isBasicAuthEnabled = computed(() => authClientConfig.value.basicAuthEnabled)
+    const { portalApi } = usePortalApi()
 
     function onRegisterSuccess () {
       $router.push({ path: '/login', query: { registered: true } })
@@ -57,7 +59,7 @@ export default defineComponent({
     })
 
     return {
-      registerEndpoint: '/portal_api/developer',
+      registerEndpoint: portalApi.value.getApiLink('/portal_api/developer'),
       onRegisterSuccess,
       isBasicAuthEnabled,
       helpText
