@@ -1,6 +1,7 @@
 import ApiService from '@/services/ApiService'
 import KongAuthApi from '@/services/KongAuthApi'
 import SessionCookie from '@/services/SessionCookie'
+import PortalV2ApiService from '@/services/PortalV2ApiService'
 
 /*
  * Set the base path for the KAuth API.
@@ -13,6 +14,8 @@ export const kongAuthApiBaseUrl = '/kauth'
 export const baseUrl = import.meta.env.DEV ? '/' : import.meta.env.VITE_PORTAL_URL
 
 export const portalApi = new ApiService(baseUrl)
+
+export const portalApiV2 = new PortalV2ApiService(baseUrl)
 
 export const kongAuthApi = new KongAuthApi(kongAuthApiBaseUrl)
 

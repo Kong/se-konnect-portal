@@ -22,6 +22,7 @@
     "@kong/kauth-client-typescript-axios": "^0.1809.0",
     "@kong/kong-auth-elements": "1.28.88",
     "@kong/kongponents": "8.33.4",
+    "@kong/sdk-portal-js": "0.0.1-beta.1",
     "@xstate/vue": "^2.0.0",
     "axios": "0.27.2",
     "date-fns": "2.29.3",
