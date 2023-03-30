@@ -10,7 +10,7 @@ export const useAppStore = defineStore('app', () => {
   const portalId = ref(null)
   const orgId = ref(null)
   const developerSession = ref(null)
-  const launchDarklyClientId = ref(null)
+  const featuresetId = ref(null)
   const authClientConfig = ref(null)
   const logout = async (fullPath) => {
     return await developerSession.value.destroy(fullPath)
@@ -29,8 +29,8 @@ export const useAppStore = defineStore('app', () => {
       authClientConfig.value = data.authClientConfig
     }
 
-    if (data.launchDarklyClientId) {
-      launchDarklyClientId.value = data.launchDarklyClientId
+    if (data.featuresetId) {
+      featuresetId.value = data.featuresetId
     }
 
     if (data.isRbacEnabled) {
@@ -59,7 +59,7 @@ export const useAppStore = defineStore('app', () => {
     portalId,
     orgId,
     developerSession,
-    launchDarklyClientId,
+    featuresetId,
     authClientConfig,
 
     logout,

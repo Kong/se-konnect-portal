@@ -8,7 +8,7 @@ import { removeQueryParam } from './router/route-utils'
 
 import useLaunchDarkly from '@/composables/useLaunchDarkly'
 
-import { kongAuthApiBaseUrl, portalApi, session } from '@/services'
+import { kongAuthApiBaseUrl, portalApi, portalApiV2, session } from '@/services'
 
 // Import kong-auth-elements, styles, and options interface
 import { KongAuthElementsPlugin } from '@kong/kong-auth-elements/dist/kong-auth-elements.es'
@@ -39,23 +39,18 @@ async function init () {
 
   registerComponents(app)
 
-  const [portalInfo, context] = await Promise.all([
-    portalApi.client.get('/portal_api/portal/portal_info'),
-    portalApi.client.get('/portal_api/portal/portal_context')
-  ])
+  const portalContext = await portalApiV2.service.portalApi.getPortalContext()
 
   const {
-    portalId,
-    orgId,
-    launchDarklyClientId,
-    basicAuthEnabled,
-    oidcAuthEnabled,
-    is_public: isPublic
-  } = portalInfo.data
-  const {
+    portal_id: portalId,
+    org_id: orgId,
+    featureset_id: featuresetId,
+    oidc_auth_enabled: oidcAuthEnabled,
+    is_public: isPublic,
+    basic_auth_enabled: basicAuthEnabled,
     is_dcr: isDcr,
     rbac_enabled: isRbacEnabled
-  } = context.data
+  } = portalContext.data
 
   if (isPublic === false) {
     portalApi.updateClientWithCredentials()
@@ -65,7 +60,7 @@ async function init () {
 
   const authClientConfig = { basicAuthEnabled, oidcAuthEnabled }
 
-  setPortalData({ portalId, orgId, authClientConfig, launchDarklyClientId, isPublic, isDcr, isRbacEnabled })
+  setPortalData({ portalId, orgId, authClientConfig, featuresetId, isPublic, isDcr, isRbacEnabled })
   setSession(session)
 
   // Fetch session data from localStorage

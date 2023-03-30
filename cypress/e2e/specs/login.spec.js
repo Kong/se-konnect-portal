@@ -54,13 +54,6 @@ describe('Login Page', () => {
 
   it('routes to intended page after login', () => {
     cy.mockSuccessfulDeveloperAuth()
-    cy.intercept('GET', '**/portal_api/portal/appearance', {
-      statusCode: 200,
-      body: {
-        catalog_cover: false
-      },
-      delay: 300
-    }).as('getPortalAppearance')
     cy.intercept('GET', 'portal_api/search/service_catalog*', {
       statusCode: 200,
       body: {
@@ -90,14 +83,6 @@ describe('Login Page', () => {
   it('can logout', () => {
     cy.mockSuccessfulDeveloperAuth()
     cy.mockGetUserInfo()
-
-    cy.intercept('GET', '**/portal_api/portal/appearance', {
-      statusCode: 200,
-      body: {
-        catalog_cover: false
-      },
-      delay: 300
-    }).as('getPortalAppearance')
     cy.intercept('GET', 'portal_api/search/service_catalog*', {
       statusCode: 200,
       body: {

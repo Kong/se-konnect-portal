@@ -77,7 +77,7 @@ Cypress.Commands.add('mockPrivatePortal', (portalContext = {}, portalInfo = {}) 
       orgId: '123',
       basicAuthEnabled: true,
       oidcAuthEnabled: false,
-      launchDarklyClientId: '6202956f054d96149719eed0',
+      featuresetId: '6202956f054d96149719eed0',
       is_public: false,
       ...portalInfo
     },
@@ -139,7 +139,7 @@ Cypress.Commands.add('mockPublicPortal', () => {
       orgId: '123',
       basicAuthEnabled: true,
       oidcAuthEnabled: false,
-      launchDarklyClientId: '6202956f054d96149719eed0',
+      featuresetId: '6202956f054d96149719eed0',
       is_public: true
     },
     delay: 300

@@ -1,4 +1,4 @@
-import axios from 'axios'
+import axios, { AxiosInstance } from 'axios'
 import { useAppStore } from '@/stores'
 import { storeToRefs } from 'pinia'
 import {
@@ -26,9 +26,9 @@ export default class PortalV2ApiService {
 
   private failedQueue: any[] = []
 
-  private authErrorCallback = null
+  private authErrorCallback: any = null
 
-  private client = null
+  private client: AxiosInstance
 
   private session: any
 
@@ -110,7 +110,7 @@ export default class PortalV2ApiService {
           authTokenIsRefreshing.value = true
 
           return new Promise((resolve, reject) => {
-            const sessionDoesExist = this.session.exists()
+            const sessionDoesExist = this.session?.exists()
 
             // If session does not exist it's not worth to even try to refresh
             if (!sessionDoesExist) {

@@ -85,19 +85,21 @@ export default defineComponent({
 
       return '/portal_api/search/service_catalog?' + queryParams.toString()
     })
-    const { portalApi } = usePortalApi()
+    const { portalApi, portalApiV2 } = usePortalApi()
 
     const loadAppearance = () => {
-      return portalApi.value.client.get('/portal_api/portal/appearance').then(res => {
-        if (res.data.welcome_message) {
-          welcome_message.value = res.data.welcome_message
+      return portalApiV2.value.service.portalApi.getPortalAppearance().then(res => {
+        const portalVariables = res.data.variables.catalog
+
+        if (portalVariables.welcome_message) {
+          welcome_message.value = portalVariables.welcome_message.text
         }
 
-        if (res.data.primary_header) {
-          primary_header.value = res.data.primary_header
+        if (portalVariables.primary_header) {
+          primary_header.value = portalVariables.primary_header.text
         }
 
-        if (res.data.catalog_cover) {
+        if (portalVariables.cover) {
           const imageUrl = portalApi.value.getApiLink('/portal_assets/catalog_cover')
 
           catalog_cover_style.value.backgroundImage = `url(${imageUrl})`

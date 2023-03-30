@@ -25,7 +25,7 @@ let ldClient
 
 export default function useLaunchDarkly () {
   const appStore = useAppStore()
-  const { launchDarklyClientId, portalId, orgId } = storeToRefs(appStore)
+  const { featuresetId, portalId, orgId } = storeToRefs(appStore)
 
   const initialize = async () => {
     if (!enableLD) {
@@ -33,7 +33,7 @@ export default function useLaunchDarkly () {
     }
 
     ldClient = ld.initialize(
-      launchDarklyClientId.value,
+      featuresetId.value,
       getUser(),
       { bootstrap: 'localStorage' }
     )
