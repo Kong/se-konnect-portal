@@ -9,7 +9,7 @@ import PortalV2ApiService from '@/services/PortalV2ApiService'
  * properly resolve within container applications, especially when called from nested routes
  */
 
-export const kongAuthApiBaseUrl = '/kauth'
+export const kongAuthApiBaseUrl = import.meta.env.DEV ? '/kauth' : new URL('/kauth', import.meta.env.VITE_PORTAL_URL).href
 
 export const baseUrl = import.meta.env.DEV ? '/' : import.meta.env.VITE_PORTAL_URL
 
