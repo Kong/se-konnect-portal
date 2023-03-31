@@ -29,7 +29,12 @@ function setHostHeader (proxy) {
 export default ({ mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
 
-  const portalApiUrl = process.env.VITE_PORTAL_URL
+  let portalApiUrl = process.env.VITE_PORTAL_URL
+
+  const subdomainR = new RegExp(/http:\/\/(.*)localhost/)
+  if (subdomainR.test(portalApiUrl)) {
+    portalApiUrl = 'http://localhost' + portalApiUrl.replace(subdomainR, '')
+  }
 
   // required to prevent localhost from being rendered as 127.0.0.1
   dns.setDefaultResultOrder('verbatim')
@@ -80,7 +85,6 @@ export default ({ mode }) => {
         '^/portal_api': {
           target: portalApiUrl,
           changeOrigin: true,
-          rewrite: (path) => (path.replace(/^\/portal-api/, '/')),
           configure: (proxy, options) => {
             mutateCookieAttributes(proxy)
             setHostHeader(proxy)
