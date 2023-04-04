@@ -5,6 +5,7 @@
       <kong-auth-register
         wrapper-id="kong-auth-register-wrapper"
         :register-request-endpoint="registerEndpoint"
+        :wrap-request="wrapRegisterRequest"
         register-button-text="Create Account"
         @register-success="onRegisterSuccess"
       />
@@ -52,6 +53,14 @@ export default defineComponent({
       $router.push({ path: '/login', query: { registered: true } })
     }
 
+    function wrapRegisterRequest (formData) {
+      // This transforms the object as the new api expects full_name
+      formData.full_name = formData.fullName
+      delete formData.fullName
+
+      return formData
+    }
+
     onBeforeMount(() => {
       if (!isBasicAuthEnabled.value) {
         $router.push({ path: '/login' })
@@ -59,9 +68,10 @@ export default defineComponent({
     })
 
     return {
-      registerEndpoint: portalApi.value.getApiLink('/portal_api/developer'),
+      registerEndpoint: portalApi.value.getApiLink('/api/v2/developer'),
       onRegisterSuccess,
       isBasicAuthEnabled,
+      wrapRegisterRequest,
       helpText
     }
   }

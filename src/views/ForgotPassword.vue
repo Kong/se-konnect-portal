@@ -11,6 +11,7 @@
       <kong-auth-forgot-password
         wrapper-id="kong-auth-forgot-password-wrapper"
         :reset-password-request-endpoint="forgotPasswordEndpoint"
+        :wrap-request="wrapForgotPasswordRequest"
         :success-text="helpText.successText"
         @click-login-link="onUserClickLogin"
       />
@@ -39,10 +40,15 @@ export default defineComponent({
       $router.push({ path: '/login' })
     }
 
+    function wrapForgotPasswordRequest (formData) {
+      return formData
+    }
+
     return {
       helpText,
+      wrapForgotPasswordRequest,
       onUserClickLogin,
-      forgotPasswordEndpoint: 'portal_api/developer/password-reset'
+      forgotPasswordEndpoint: 'api/v2/developer/password-reset'
     }
   }
 
