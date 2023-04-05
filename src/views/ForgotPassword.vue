@@ -48,7 +48,7 @@ export default defineComponent({
       helpText,
       wrapForgotPasswordRequest,
       onUserClickLogin,
-      forgotPasswordEndpoint: 'api/v2/developer/password-reset'
+      forgotPasswordEndpoint: 'api/v2/developer/forgot-password'
     }
   }
 
