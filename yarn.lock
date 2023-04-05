@@ -633,10 +633,10 @@
     v-calendar "^3.0.0-alpha.8"
     vue-draggable-next "^2.1.1"
 
-"@kong/sdk-portal-js@0.0.1-beta.1":
-  version "0.0.1-beta.1"
-  resolved "https://registry.yarnpkg.com/@kong/sdk-portal-js/-/sdk-portal-js-0.0.1-beta.1.tgz#022078881d81e54c52601124e72241f2c8c6b305"
-  integrity sha512-vdT9xOW8YHg9+qh44tY5QeehZUrdN1HiqCHn7jc0vgOFHTAerqWobj51ByEZSY6EyK7WhT9hvmHie8RgDNBoHQ==
+"@kong/sdk-portal-js@0.0.1-beta.2":
+  version "0.0.1-beta.2"
+  resolved "https://registry.yarnpkg.com/@kong/sdk-portal-js/-/sdk-portal-js-0.0.1-beta.2.tgz#9b09720e2ef45be615e02e4f4aa03bd81e40269a"
+  integrity sha512-IfdFSmFIsUt9fwpRX3+4nomM5DtjPBGEH+M7jQBAZgmJhw2ncwOSIDx5AKuRvQL82TE4maIRlaf51AufkKCWYw==
 
 "@kong/swagger-ui-kong-theme-universal@^4.1.6":
   version "4.1.6"
