@@ -5,7 +5,6 @@ import {
   Configuration,
   PortalApi,
   ApplicationsApi,
-  AppRegApi,
   SearchApi,
   CredentialsApi,
   DeveloperApi,
@@ -35,7 +34,6 @@ export default class PortalV2ApiService {
   public service: {
     portalApi: PortalApi,
     applicationsApi: ApplicationsApi,
-    applicationRegistrationApi: AppRegApi,
     searchApi: SearchApi,
     credentialsApi: CredentialsApi,
     developerApi: DeveloperApi,
@@ -68,13 +66,12 @@ export default class PortalV2ApiService {
 
     const baseConfig = new Configuration({
       basePath: '',
-      accessToken: () => this.session.getAccessToken()
+      accessToken: this.session?.getAccessToken()
     })
 
     this.service = {
       portalApi: new PortalApi(baseConfig, this.baseURL, this.client),
       applicationsApi: new ApplicationsApi(baseConfig, this.baseURL, this.client),
-      applicationRegistrationApi: new AppRegApi(baseConfig, this.baseURL, this.client),
       searchApi: new SearchApi(baseConfig, this.baseURL, this.client),
       credentialsApi: new CredentialsApi(baseConfig, this.baseURL, this.client),
       developerApi: new DeveloperApi(baseConfig, this.baseURL, this.client),
