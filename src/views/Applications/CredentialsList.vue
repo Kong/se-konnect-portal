@@ -195,7 +195,7 @@ export default defineComponent({
     const renameKeyRow = ref({})
     const deletedKeyRow = ref({})
 
-    const { portalApi } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
     const { state: currentState, send } = useMachine(
       createMachine({
@@ -220,7 +220,7 @@ export default defineComponent({
     const fetcher = async () => {
       send('FETCH')
 
-      return portalApi.value.client.get(`/portal_api/applications/${props.id}/credentials`).then((res) => {
+      return portalApiV2.value.service.credentialsApi.getManyCredentials({ applicationId: props.id }).then((res) => {
         send('RESOLVE')
 
         return {
@@ -242,8 +242,11 @@ export default defineComponent({
         return
       }
 
-      portalApi.value.client.post(`/portal_api/applications/${props.id}/credentials`, {
-        display_name: displayName.value
+      portalApiV2.value.service.credentialsApi.createCredential({
+        applicationId: props.id,
+        createCredentialPayload: {
+          display_name: displayName.value
+        }
       })
         .then((res) => {
           displayNameModalVisible.value = false
@@ -269,8 +272,12 @@ export default defineComponent({
         return
       }
 
-      portalApi.value.client.patch(`/portal_api/applications/${props.id}/credentials/${renameKeyRow.value?.id}`, {
-        display_name: updatedDisplayName.value
+      portalApiV2.value.service.credentialsApi.updateCredential({
+        applicationId: props.id,
+        credentialId: renameKeyRow.value?.id,
+        updateCredentialPayload: {
+          display_name: updatedDisplayName.value
+        }
       })
         .then(() => {
           displayNameModalVisible.value = false
@@ -285,7 +292,10 @@ export default defineComponent({
     }
 
     const handleDeleteCredentialSubmit = () => {
-      portalApi.value.client.delete(`/portal_api/applications/${props.id}/credentials/${deletedKeyRow.value?.id}`)
+      portalApiV2.value.service.credentialsApi.deleteCredential({
+        applicationId: props.id,
+        credentialId: deletedKeyRow.value?.id
+      })
         .then(() => {
           handleSuccess('revoked')
           deletedKeyRow.value = {}

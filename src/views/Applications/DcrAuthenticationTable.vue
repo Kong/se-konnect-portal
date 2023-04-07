@@ -96,14 +96,16 @@ export default defineComponent({
       }
     }
 
-    const { portalApi } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
     const formatDate = (date) => {
       return format(new Date(date), 'yyyy-MM-dd ppp')
     }
     const handleRefreshSecret = (id) => {
       isLoading.value = true
-      portalApi.value.client.post(`/portal_api/applications/${id}/refresh_token`)
+      portalApiV2.value.service.credentialsApi.refreshApplicationToken({
+        applicationId: id
+      })
         .then((res) => {
           isLoading.value = null
           notify({

@@ -111,7 +111,7 @@ export default defineComponent({
       text: 'My Apps'
     }]))
 
-    const { portalApi } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
     const appStore = useAppStore()
     const { isDcr } = storeToRefs(appStore)
@@ -131,7 +131,7 @@ export default defineComponent({
     const fetchApplication = () => {
       send('FETCH')
 
-      portalApi.value.client.get(`/portal_api/applications/${id.value}`)
+      portalApiV2.value.service.applicationsApi.getOneApplication({ applicationId: id.value })
         .then(res => {
           application.value = res.data
           send('RESOLVE')
