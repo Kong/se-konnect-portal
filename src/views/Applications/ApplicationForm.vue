@@ -273,7 +273,7 @@ export default defineComponent({
 
     )
 
-    const { portalApi } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
     onMounted(() => {
       if (id.value) {
@@ -296,8 +296,11 @@ export default defineComponent({
 
     const handleSubmit = () => {
       send('CLICKED_SUBMIT')
-      portalApi.value.client
-        .post('/portal_api/applications', cleanupEmptyFields(formData.value))
+
+      portalApiV2.value.service.applicationsApi
+        .createApplication({
+          createApplicationPayload: cleanupEmptyFields(formData.value)
+        })
         .then((res) => {
           if (isDcr.value) {
             secretModalIsVisible.value = true
@@ -313,23 +316,27 @@ export default defineComponent({
 
     const handleUpdate = () => {
       send('CLICKED_SUBMIT')
-      portalApi.value.client
-        .patch(`/portal_api/applications/${id.value}`, cleanupEmptyFields(formData.value))
+
+      portalApiV2.value.service.applicationsApi
+        .updateApplication({
+          applicationId: id.value,
+          updateApplicationPayload: cleanupEmptyFields(formData.value)
+        })
         .then((res) => handleSuccess(res.data.id, 'updated'))
         .catch((error) => handleError(error))
     }
 
     const handleDelete = () => {
-      portalApi.value.client
-        .delete(`/portal_api/applications/${id.value}`)
+      portalApiV2.value.service.applicationsApi
+        .deleteApplication({ applicationId: id.value })
         .then((res) => handleSuccess(res.data.id, 'deleted'))
         .catch((error) => handleError(error))
     }
 
     const fetchApplication = () => {
       send('FETCH')
-      portalApi.value.client
-        .get(`/portal_api/applications/${id.value}`)
+      portalApiV2.value.service.applicationsApi
+        .getOneApplication({ applicationId: id.value })
         .then((res) => {
           send('RESOLVE')
           formData.value.name = res.data.name
@@ -389,21 +396,19 @@ export default defineComponent({
     const handleError = (error) => {
       const { data } = error.response
       const responseError =
-        (data.message && data.message[0]?.constraints) ||
-        data.message ||
-        error.message
+        (data.invalid_parameters && data.invalid_parameters.length && data.invalid_parameters) ||
+        data.detail ||
+        error.detail
 
       send('REJECT')
 
-      if (typeof responseError === 'object' && Object.keys(responseError).length) {
-        errorMessage.value = responseError[Object.keys(responseError)[0]]
+      if (Array.isArray(responseError)) {
+        errorMessage.value = responseError.map(err => err.reason).join(', ')
 
         return
       }
 
-      errorMessage.value = Array.isArray(responseError)
-        ? responseError.join('. ')
-        : responseError
+      errorMessage.value = responseError
     }
 
     const handleCancel = () => {

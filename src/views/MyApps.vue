@@ -173,7 +173,7 @@ export default defineComponent({
     const deleteItem = ref(null)
     const showSecretModal = ref(false)
     const token = ref(null)
-    const { portalApi } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
     const modalTitle = computed(() => `Delete ${deleteItem.value?.name}`)
 
@@ -196,22 +196,27 @@ export default defineComponent({
     const fetcher = async () => {
       send('FETCH')
 
-      return portalApi.value.client.get('/portal_api/applications').then((applications) => {
-        send('RESOLVE')
+      return portalApiV2.value.service.applicationsApi
+        .getManyApplications()
+        .then((res) => {
+          send('RESOLVE')
 
-        return {
-          data: applications.data.data,
-          total: applications.data.total
-        }
-      }).catch((e) => {
-        send('REJECT')
+          return {
+            data: res.data.data,
+            total: res.data.meta.page.total
+          }
+        }).catch((e) => {
+          send('REJECT')
 
-        errorMessage.value = getMessageFromError(e)
-      })
+          errorMessage.value = getMessageFromError(e)
+        })
     }
 
     const handleDelete = () => {
-      portalApi.value.client.delete(`/portal_api/applications/${deleteItem.value.id}`)
+      portalApiV2.value.service.applicationsApi
+        .deleteApplication({
+          applicationId: deleteItem.value.id
+        })
         .then(() => {
           deleteItem.value = null
           revalidate() // refetch applications
@@ -229,7 +234,7 @@ export default defineComponent({
     }
 
     const handleRefreshSecret = (id) => {
-      portalApi.value.client.post(`/portal_api/applications/${id}/refresh_token`)
+      portalApiV2.value.service.applicationsApi.refreshApplicationToken({ applicationId: id })
         .then((res) => {
           notify({
             message: 'Successfully refreshed secret'
