@@ -8,7 +8,7 @@ import { removeQueryParam } from './router/route-utils'
 
 import useLaunchDarkly from '@/composables/useLaunchDarkly'
 
-import { kongAuthApiBaseUrl, portalApi, portalApiV2, session } from '@/services'
+import { kongAuthApiBaseUrl, portalApi, portalApiV2, session, kongAuthApi } from '@/services'
 
 // Import kong-auth-elements, styles, and options interface
 import { KongAuthElementsPlugin } from '@kong/kong-auth-elements/dist/kong-auth-elements.es'
@@ -73,7 +73,7 @@ async function init () {
       let res
 
       try {
-        res = await portalApi.client.get('/portal_api/userinfo')
+        res = await kongAuthApi.client.get('/api/v2/developer/me')
       } catch (e) {
         // // catch error to prevent going directly to global api error handler
         res = { data: undefined }

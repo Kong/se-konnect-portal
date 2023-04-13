@@ -51,7 +51,7 @@ import { defineComponent, computed, ref, onMounted } from 'vue'
 import { useMachine } from '@xstate/vue'
 import { createMachine } from 'xstate'
 import AuthCard from '../components/AuthCard'
-import usePortalApi from '@/hooks/usePortalApi'
+import useKongAuthApi from '@/hooks/useKongAuthApi'
 import useLaunchDarkly from '@/composables/useLaunchDarkly'
 import { useRouter } from 'vue-router'
 import { useI18nStore, useAppStore } from '@/stores'
@@ -63,7 +63,7 @@ export default defineComponent({
   },
   setup () {
     const errorMessage = ref('')
-    const { portalApi } = usePortalApi()
+    const { kongAuthApi } = useKongAuthApi()
     const helpText = useI18nStore().state.helpText
     const appStore = useAppStore()
     const {
@@ -121,8 +121,8 @@ export default defineComponent({
     const onLoginSuccess = () => {
       send('KAUTH_SUCCESS')
 
-      portalApi.value.client
-        .get('/portal_api/userinfo').then(async res => {
+      kongAuthApi.value.client
+        .get('/api/v2/developer/me').then(async res => {
           send('USER_FETCH_SUCCESS')
 
           session.value.saveData({

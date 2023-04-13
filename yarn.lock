@@ -571,28 +571,28 @@
     rimraf "3.0.2"
     typescript "4.8.2"
 
-"@kong/kauth-client-typescript-axios@^0.1809.0":
-  version "0.1809.0"
-  resolved "https://registry.yarnpkg.com/@kong/kauth-client-typescript-axios/-/kauth-client-typescript-axios-0.1809.0.tgz#927b569b3bc0e19c1c718091574a5b7424733626"
-  integrity sha512-MUVwSPWydrrySNYBjYMCl3yuND3WbbQVG+EpJ5PVgKCrlPiowZibN8EPM/DdaDdjVjL6baJD7sqIcBeVu9O1Zg==
+"@kong/kauth-client-typescript-axios@^0.1883.0":
+  version "0.1883.0"
+  resolved "https://registry.yarnpkg.com/@kong/kauth-client-typescript-axios/-/kauth-client-typescript-axios-0.1883.0.tgz#7f032597643575779fb5314ff47ed061fdf0dd84"
+  integrity sha512-1y/FwepXnlvsqWidW+zGHHosS2auXhgGN1gRKHeqq9WTY13ltAQmYlD4XGpScbPOyezgJwq2axWahENWQxf4rg==
 
-"@kong/kauth-client-typescript-axios@^0.1870.0":
-  version "0.1870.0"
-  resolved "https://registry.yarnpkg.com/@kong/kauth-client-typescript-axios/-/kauth-client-typescript-axios-0.1870.0.tgz#ea14d29105e1671667aa6c0cac19fd059d2e9faf"
-  integrity sha512-ND7plFquYkhbhxas9QVbSUOGliFr2E0IX8XhBaZWOD5jOUhS8r/1BZAGJ1bH/FGDeq6+8GbMJXkJiNBM+dChNw==
+"@kong/kauth-client-typescript-axios@^0.1884.0":
+  version "0.1884.0"
+  resolved "https://registry.yarnpkg.com/@kong/kauth-client-typescript-axios/-/kauth-client-typescript-axios-0.1884.0.tgz#23915b43c213f63c1b4ea36126d363a579cf46d8"
+  integrity sha512-ekJsPAks6v+lSj0PXLunLrJZUJABtR/74C9QrtIHiNgTrA7SrcTmUPRlNKm2SuID8n6vC/cem29RG+Kh35HdCA==
 
-"@kong/kauth-client-v2-axios@^0.0.28":
-  version "0.0.28"
-  resolved "https://registry.yarnpkg.com/@kong/kauth-client-v2-axios/-/kauth-client-v2-axios-0.0.28.tgz#a7d44086e5cd05a6561850b87478823dcce11aec"
-  integrity sha512-85EkGEufQ/rfWzCNh8vUuZLdEl6ez2hQAVXdfvG5jM/qaPXbjLwiFL33y51Zj8UxnnE107JO/SPLupu6Plyzzg==
+"@kong/kauth-client-v2-axios@^0.0.30":
+  version "0.0.30"
+  resolved "https://registry.yarnpkg.com/@kong/kauth-client-v2-axios/-/kauth-client-v2-axios-0.0.30.tgz#454f568a383ebe67c2c939ddc9bccc6e678427d0"
+  integrity sha512-TR0w+pum3LvQzWbUDZ38KbNSX25BT4Zea8m6uoNv6cTptlhGUrWIz52bgNnLjtetfqIZUaskusNMxU9RUl8UzQ==
 
-"@kong/kong-auth-elements@1.31.4":
-  version "1.31.4"
-  resolved "https://registry.yarnpkg.com/@kong/kong-auth-elements/-/kong-auth-elements-1.31.4.tgz#73c0e543ca4ba2ebbe5b7fdd55e1ebeb384efe23"
-  integrity sha512-bB9Rec/zoXWoB4pxRWm0/O1HZbv6h/QjhVplNqs5vSwzqepsyUblspI0TBEv1iIIRSd/TuLORpen5HpyjH3e3g==
+"@kong/kong-auth-elements@1.32.4":
+  version "1.32.4"
+  resolved "https://registry.yarnpkg.com/@kong/kong-auth-elements/-/kong-auth-elements-1.32.4.tgz#cd4a501f9c9855a605b2c925ae2b1da1d2e9e789"
+  integrity sha512-l6voEjmlsFHjWs4QE9YNmtXbJKyXfambYaOH+pojGHAuqQcgif6NJs+vK4avZSE2karFFf75qF8y4d0OJvkQXw==
   dependencies:
-    "@kong/kauth-client-typescript-axios" "^0.1870.0"
-    "@kong/kauth-client-v2-axios" "^0.0.28"
+    "@kong/kauth-client-typescript-axios" "^0.1883.0"
+    "@kong/kauth-client-v2-axios" "^0.0.30"
     "@xstate/vue" "^0.8.1"
     axios "^0.27.2"
     vue "^3.2.47"

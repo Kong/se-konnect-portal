@@ -268,7 +268,7 @@ describe('Login Page', () => {
   })
 
   it('does not hang on loading when loginSuccess provided by user', () => {
-    cy.intercept('GET', '**/portal_api/userinfo', {
+    cy.intercept('GET', '**/api/v2/developer/me', {
       statusCode: 401,
       body: {
       },

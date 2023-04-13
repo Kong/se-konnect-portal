@@ -162,19 +162,14 @@ Cypress.Commands.add('mockSuccessfulPasswordReset', () => {
 })
 
 Cypress.Commands.add('mockGetUserInfo', () => {
-  return cy.intercept('GET', '**/portal_api/userinfo', {
+  return cy.intercept('GET', '**/api/v2/developer/me', {
     statusCode: 200,
     body: {
+      created_at: '2022-12-06T21:37:15Z',
+      full_name: 'test-name',
       id: '967ca69f-e098-46d1-a572-2e8c73aeb807',
       email: 'test-email@email.com',
-      is_active: true,
-      profile: {
-        full_name: 'test-name',
-        preferred_name: ''
-      },
-      org: {
-        id: 'e8dd6b67-3d70-439a-90a4-778b4ad0b146'
-      }
+      updated_at: '2023-04-13T15:05:02Z'
     },
     delay: 300
   }).as('getUserInfo')
