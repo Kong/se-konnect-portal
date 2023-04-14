@@ -31,7 +31,7 @@ import { servicePackage } from '../fixtures/consts'
 import document from '../fixtures/document.json'
 import documentTreeJson from '../fixtures/documentTree.json'
 import apiDocumentationJson from '../fixtures/parentApiDocumentation.json'
-import petstoreOperatations from '../fixtures/petstoreOperations.json'
+import petstoreOperationsV2 from '../fixtures/v2/petstoreOperations.json'
 
 Cypress.Commands.add('mockPrivatePortal', (portalContext = {}, portalInfo = {}) => {
   cy.intercept('GET', '**/portal_api/portal/portal_context', {
@@ -441,8 +441,8 @@ Cypress.Commands.add('mockServiceHasDocs', (hasDocumentation) => {
   }).as('hasDocs')
 })
 
-Cypress.Commands.add('mockServiceOperations', (operations = petstoreOperatations) => {
-  cy.intercept('get', '**/portal_api/service_packages/*/service_versions/*/operations', {
-    body: petstoreOperatations
+Cypress.Commands.add('mockServiceOperations', (operations = petstoreOperationsV2) => {
+  cy.intercept('get', '**/api/v2/products/*/versions/*/operations', {
+    body: operations
   }).as('operations')
 })

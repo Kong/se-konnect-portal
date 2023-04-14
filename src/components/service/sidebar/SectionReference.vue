@@ -15,13 +15,12 @@
 <script lang="ts" setup>
 import { ref, watch } from 'vue'
 import Section from './Section.vue'
-import usePortalApi from '@/hooks/usePortalApi'
 import { KSkeleton } from '@kong/kongponents'
-import { SpecOperationsList } from '@kong-ui-public/spec-renderer'
+import { Operation, SpecOperationsList } from '@kong-ui-public/spec-renderer'
+import { portalApiV2 } from '@/services'
 import '@kong-ui-public/spec-renderer/dist/style.css'
 
-const { portalApi } = usePortalApi()
-const operations = ref(null)
+const operations = ref<Operation[]|null>(null)
 const isLoading = ref(true)
 
 const props = defineProps({
@@ -52,12 +51,17 @@ async function fetchOperations () {
   isLoading.value = true
 
   try {
-    const res = await portalApi.value.client.get(`/portal_api/service_packages/${servicePackageId}/service_versions/${serviceVersionId}/operations`)
+    const res = await portalApiV2.service.versionsApi.getProductVersionSpecOperations({
+      productId: servicePackageId,
+      versionId: serviceVersionId
+    })
 
-    operations.value = res.data.operations
+    operations.value = res.data.operations.map(operation => ({
+      ...operation,
+      operationId: operation.operation_id
+    }))
   } catch (err) {
     console.error(err)
-    // TODO(TDX-2781): Display a global error?
   } finally {
     isLoading.value = false
   }
