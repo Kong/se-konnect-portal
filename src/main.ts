@@ -48,7 +48,7 @@ async function init () {
     oidc_auth_enabled: oidcAuthEnabled,
     is_public: isPublic,
     basic_auth_enabled: basicAuthEnabled,
-    is_dcr: isDcr,
+    dcr_provider_ids: dcrProviderIds,
     rbac_enabled: isRbacEnabled
   } = portalContext.data
 
@@ -60,7 +60,7 @@ async function init () {
 
   const authClientConfig = { basicAuthEnabled, oidcAuthEnabled }
 
-  setPortalData({ portalId, orgId, authClientConfig, featuresetId, isPublic, isDcr, isRbacEnabled })
+  setPortalData({ portalId, orgId, authClientConfig, featuresetId, isPublic, isDcr: !!dcrProviderIds.length, isRbacEnabled })
   setSession(session)
 
   // Fetch session data from localStorage
