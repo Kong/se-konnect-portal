@@ -342,7 +342,7 @@ export default defineComponent({
           formData.value.name = res.data.name
           formData.value.description = res.data.description || ''
 
-          if (res.data.is_dcr) {
+          if (isDcr) {
             formData.value.redirect_uri = res.data.redirect_uri
           } else {
             formData.value.reference_id = res.data.reference_id

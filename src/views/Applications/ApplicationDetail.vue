@@ -56,16 +56,10 @@
             </div>
           </div>
         </div>
-        <KAlert
-          v-if="isDcr && !application.is_dcr"
-          appearance="warning"
-          :alert-message="helpText.dcrIncompatibleApplication"
-          class="my-6"
-        />
       </div>
       <hr class="my-6">
       <DcrAuthenticationTable
-        v-if="isDcr && application.is_dcr"
+        v-if="isDcr"
         :application="application"
         class="mb-6"
       />

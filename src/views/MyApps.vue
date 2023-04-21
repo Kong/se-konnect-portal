@@ -55,7 +55,7 @@
               <ActionsDropdown :key="row.id">
                 <template #content>
                   <div
-                    v-if="row.is_dcr"
+                    v-if="isDcr"
                     data-testid="dropdown-refresh-application-dcr-token"
                     class="py-2 px-3 type-md cursor-pointer"
                     @click="handleRefreshSecret(row.id)"
@@ -159,6 +159,8 @@ import PageTitle from '../components/PageTitle'
 import ActionsDropdown from '../components/ActionsDropdown'
 import usePortalApi from '@/hooks/usePortalApi'
 import useToaster from '@/composables/useToaster'
+import { useAppStore } from '@/stores'
+import { storeToRefs } from 'pinia'
 
 export default defineComponent({
   name: 'MyApps',
@@ -174,6 +176,9 @@ export default defineComponent({
     const showSecretModal = ref(false)
     const token = ref(null)
     const { portalApiV2 } = usePortalApi()
+    
+    const appStore = useAppStore()
+    const { isDcr } = storeToRefs(appStore)
 
     const modalTitle = computed(() => `Delete ${deleteItem.value?.name}`)
 
@@ -268,6 +273,7 @@ export default defineComponent({
       currentState,
       tableHeaders,
       handleDelete,
+      isDcr,
       deleteItem,
       showSecretModal,
       token,

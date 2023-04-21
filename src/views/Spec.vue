@@ -75,8 +75,6 @@ import markdownAnchor from 'markdown-it-anchor'
 import markdownToc from 'markdown-it-toc-done-right'
 import jsyaml from 'js-yaml'
 
-import useToaster from '@/composables/useToaster'
-
 import getMessageFromError from '@/helpers/getMessageFromError'
 import ViewSpecModal from '../components/ViewSpecModal'
 import ViewSpecRegistrationModal from '../components/ViewSpecRegistrationModal'
@@ -113,7 +111,6 @@ export default defineComponent({
     const specName = ref('')
     const specDetails = ref(null)
     const serviceVersions = ref(new Map())
-    const { notify } = useToaster()
     const { canUserAccess } = usePermissionsStore()
     const appStore = useAppStore()
     const { isPublic } = storeToRefs(appStore)
@@ -136,7 +133,7 @@ export default defineComponent({
 
     const $router = useRouter()
     const $route = useRoute()
-    const { portalApi } = usePortalApi()
+    const { portalApi, portalApiV2 } = usePortalApi()
 
     watch(() => props.service, async () => {
       isAllowedToRegister.value = await canUserAccess({
@@ -227,7 +224,7 @@ export default defineComponent({
       document.body.removeChild(element)
     }
 
-    function getSpecContents (ui) {
+    function getSpecContents () {
       return JSON.stringify(spec.value, null, 2)
     }
 
@@ -324,7 +321,10 @@ export default defineComponent({
         throw Error('no service package found')
       }
 
-      return await portalApi.value.client.get(`/portal_api/service_packages/${$route.params.service_package}/service_versions/${version}/document`)
+      return await portalApiV2.value.service.versionsApi.getProductVersionSpec({
+        productId: $route.params.service_package,
+        versionId: version
+      })
         .then(async res => {
           if (res.status === 204) {
             res.data = {}
@@ -426,18 +426,6 @@ export default defineComponent({
           console.error(e)
         }
       }
-    }
-
-    async function onSelectSpec (e) {
-      const selection = e.target.value
-
-      $router.push({
-        name: 'spec',
-        params: {
-          service_version: encodeURIComponent(selection),
-          service_package: $route.params.service_package
-        }
-      })
     }
 
     return {
