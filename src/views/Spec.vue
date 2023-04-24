@@ -5,9 +5,7 @@
   >
     <div class="container mx-auto max-w-screen-2xl px-5 md:px-0">
       <div class="swagger-ui has-sidebar breadcrumbs">
-        <KBreadcrumbs
-          :items="breadcrumbs"
-        />
+        <KBreadcrumbs :items="breadcrumbs" />
       </div>
     </div>
     <div class="container mx-auto max-w-screen-2xl px-5 md:px-0">
@@ -114,7 +112,6 @@ export default defineComponent({
     const { canUserAccess } = usePermissionsStore()
     const appStore = useAppStore()
     const { isPublic } = storeToRefs(appStore)
-
 
     const applicationRegistrationEnabled = computed(() => {
       return !!applicationRegistration.value && isAllowedToRegister.value
@@ -317,23 +314,32 @@ export default defineComponent({
     async function fetchSpec (version) {
       loading.value = true
 
-      if (!$route.params.service_package) {
-        throw Error('no service package found')
-      }
-
       return await portalApiV2.value.service.versionsApi.getProductVersionSpec({
         productId: $route.params.service_package,
         versionId: version
       })
         .then(async res => {
+          // no content
           if (res.status === 204) {
             res.data = {}
 
             return res
           }
 
-          if (res.headers['content-type'] === 'text/plain; charset=utf-8') {
-            res.data = await jsyaml.load(res.data)
+          const rawContent = res.data.content
+
+          // first iteration - assume we were passed raw yaml
+          try {
+            res.data = await jsyaml.load(rawContent)
+          } catch (error) {
+            console.error('Failed to parse yaml', error)
+          }
+
+          // fallback - try to parse response content as json
+          try {
+            res.data = await JSON.parse(rawContent)
+          } catch (error) {
+            console.error('Failed to parse json', error)
           }
 
           return res
@@ -409,12 +415,14 @@ export default defineComponent({
         await fetchApplicationRegistration(currentServiceVersion)
       }
 
-      if (currentServiceVersion?.id) {
+      // if we have a service version, fetch the spec
+      if (currentServiceVersion?.id && $route.params.service_package) {
         try {
           const specResponse = await fetchSpec(serviceVersionId)
 
           spec.value = specResponse.data
-          // detect 404 for usage in swagger-ui-kong-theme /src/components/Layout.js#L135
+
+          // detect 404 for usage in swagger-ui-kong-theme-universal
           if (specResponse.status === 404 || specResponse.status === 204) {
             spec.value.statusCode = 404
           }
@@ -463,15 +471,19 @@ export default defineComponent({
     border-color: var(--KAlertWarningBorder, var(--yellow-200, color(yellow-200)));
     background-color: var(--KAlertWarningBackground, var(--yellow-100, color(yellow-100)));
   }
+
   .container .breadcrumbs {
     position: relative;
     left: var(--spacing-xs)
   }
+
   .swagger-ui .version-pragma {
     display: none;
   }
+
   .header-anchor {
     position: relative;
+
     svg {
       position: absolute;
       left: -1.5rem;

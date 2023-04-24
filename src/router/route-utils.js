@@ -28,7 +28,6 @@ export function shouldRedirectToLogin ({ isPublic, isSessionInvalid, to }) {
   // If there is private portal and session is invalid (user not logged in)
   // and route is only available to logged users
 
-
   return !isPublic && isSessionInvalid && !isAuthRoute(to.name)
 }
 

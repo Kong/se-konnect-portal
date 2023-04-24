@@ -176,7 +176,7 @@ export default defineComponent({
     const showSecretModal = ref(false)
     const token = ref(null)
     const { portalApiV2 } = usePortalApi()
-    
+
     const appStore = useAppStore()
     const { isDcr } = storeToRefs(appStore)
 
