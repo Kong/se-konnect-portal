@@ -185,7 +185,7 @@ export default {
 
       return {
         default: {
-          title: defaultModal.title(props.service.name, props.version.version),
+          title: defaultModal.title(props.service.name, props.version?.version),
           buttonText: defaultModal.buttonText
         },
         success: {
@@ -199,7 +199,7 @@ export default {
     const availableApplications = computed(() => {
       return applications.value.filter(app => {
         if (app.registrations.length > 0) {
-          return app.registrations.every(r => r.service_version.id !== props.version.id)
+          return app.registrations.every(r => r.service_version.id !== props.version?.id)
         }
 
         return app
@@ -209,7 +209,7 @@ export default {
     const registeredApplications = computed(() => {
       return applications.value.filter(app => {
         if (app.registrations.length > 0) {
-          return app.registrations.some(r => r.service_version.id === props.version.id)
+          return app.registrations.some(r => r.service_version.id === props.version?.id)
         }
 
         return app

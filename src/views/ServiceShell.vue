@@ -181,7 +181,7 @@ onMounted(async () => {
 })
 
 watch(() => serviceVersionParam.value, () => {
-  if (serviceVersionParam.value !== activeServiceVersionId.value) {
+  if (serviceVersionParam.value && (serviceVersionParam.value !== activeServiceVersionId.value)) {
     servicePackageStore.setActiveServiceVersionId(serviceVersionParam.value)
   }
 
