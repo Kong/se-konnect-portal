@@ -20,7 +20,7 @@
     "@kong-ui-public/spec-renderer": "^0.7.4",
     "@kong/dochub-portal-axios": "^0.0.256",
     "@kong/kauth-client-typescript-axios": "^0.1884.0",
-    "@kong/kong-auth-elements": "1.32.4",
+    "@kong/kong-auth-elements": "1.33.1",
     "@kong/kongponents": "8.33.4",
     "@kong/sdk-portal-js": "0.0.1-beta.10",
     "@xstate/vue": "^2.0.0",
