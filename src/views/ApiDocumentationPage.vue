@@ -54,7 +54,6 @@ import { findAllNodesOfType, getNodeTextContent } from '@/helpers/document'
 import { useI18nStore, useServicePackageStore } from '@/stores'
 import useToaster from '@/composables/useToaster'
 import DocumentViewer, { HeadingNode, addSlug } from '@kong-ui-public/document-viewer'
-import { Document } from '@kong/dochub-portal-axios'
 
 import '@kong-ui-public/document-viewer/dist/style.css'
 
@@ -79,10 +78,9 @@ export default defineComponent({
     const { notify } = useToaster()
     const errorCode = ref(null)
     const router = useRouter()
-    const { portalApi } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
     const servicePackageDocuments = ref(null)
-    const document = ref(null)
 
     const breadcrumbs = computed(() => ([
       {
@@ -150,15 +148,15 @@ export default defineComponent({
       errorCode.value = null
       isDocumentLoading.value = true
 
-      return portalApi.value.client.get<Document>(`/portal_api/service_packages/${servicePackageId}/documents/${slug}`)
-        .then(r => r.data)
-        .then((data) => {
-          document.value = data.revision
-          title.value = data.revision.title
-          content.value = data.revision.content
-          servicePackageStore.setActiveDocumentId(data.id)
+      portalApiV2.value.service.documentationApi.getProductDocument({
+        productId: servicePackageId,
+        documentId: slug
+      })
+        .then((res) => {
+          title.value = res.data.title
+          content.value = res.data.content
+          servicePackageStore.setActiveDocumentId(res.data.id)
         })
-        // TODO: add .catch when we are able to find time to fix e2e test
         .finally(() => {
           isDocumentLoading.value = false
         })

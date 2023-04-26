@@ -7,6 +7,7 @@
       <KCollapse
         v-if="document.children && document.children.length"
         v-model="isNodeCollapsedMap[document.id]"
+        class="collapse-container"
       >
         <template #trigger>
           <!--template with any content to override the default #trigger slot-->
@@ -133,6 +134,9 @@ export default defineComponent({
 </script>
 <style lang="scss" scoped>
   .title {
+    &.router-link-active {
+      font-weight: 500;
+    }
     flex: 1 1 auto;
     display: block;
     font-size: 0.875rem;
@@ -148,11 +152,11 @@ export default defineComponent({
     color: var(--text_colors-accent);
   }
 
-  .title.active {
-    font-weight: 600;
+  ul li :deep(.k-collapse-visible-content) {
+    margin-bottom: 0 !important;
   }
 
-  ul li :deep(.k-collapse-visible-content) {
+  .collapse-container :deep(.k-collapse-heading) {
     margin-bottom: 0 !important;
   }
 

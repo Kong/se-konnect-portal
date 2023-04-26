@@ -44,7 +44,7 @@ const { notify } = useToaster()
 const helpText = useI18nStore().state.helpText
 const route = useRoute()
 const router = useRouter()
-const { portalApi } = usePortalApi()
+const { portalApi, portalApiV2 } = usePortalApi()
 const serviceError = ref(null)
 const activeServiceVersionDeprecated = ref(false)
 const deselectOperation = ref<boolean>(false)
@@ -53,7 +53,7 @@ const deselectOperation = ref<boolean>(false)
 const servicePackageStore = useServicePackageStore()
 const { servicePackage, documentTree, activeDocumentSlug, activeServiceVersionId } = storeToRefs(servicePackageStore)
 
-const servicePackageIdParam = computed(() => route.params.service_package)
+const servicePackageIdParam = computed(() => route.params.service_package as string)
 const serviceVersionParam = computed(() => route.params.service_version as string)
 
 function setActiveDocumentSlug () {
@@ -84,9 +84,17 @@ async function fetchDocumentTree () {
   const id = servicePackageIdParam.value
 
   try {
-    const res = await portalApi.value.client.get(`/portal_api/service_packages/${id}/document_tree`)
+    const res = await portalApiV2.value.service.documentationApi.getProductDocuments(
+      {
+        productId: id
+      },
+      {
+        headers: {
+          accept: 'application/konnect.document-tree+json'
+        }
+      })
 
-    servicePackageStore.setDocumentTree(res.data.tree)
+    servicePackageStore.setDocumentTree(res.data.data)
   } catch (err) {
     if (err.response.status === 404) {
       servicePackageStore.setDocumentTree([])
