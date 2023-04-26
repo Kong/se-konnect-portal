@@ -26,10 +26,13 @@ function setHostHeader (proxy) {
   })
 }
 
-export default ({ mode }) => {
+export default ({ command, mode }) => {
   process.env = { ...process.env, ...loadEnv(mode, process.cwd()) }
 
   let portalApiUrl = process.env.VITE_PORTAL_URL
+  if (!portalApiUrl.endsWith('/')) {
+    portalApiUrl += '/'
+  }
 
   const subdomainR = new RegExp(/http:\/\/(.*)localhost/)
   if (subdomainR.test(portalApiUrl)) {
@@ -56,7 +59,7 @@ export default ({ mode }) => {
         minify: true,
         inject: {
           data: {
-            apiURL: portalApiUrl
+            apiURL: command === 'serve' ? '/' : portalApiUrl
           }
         }
       })
@@ -91,15 +94,6 @@ export default ({ mode }) => {
           }
         },
         '^/api': {
-          target: portalApiUrl,
-          changeOrigin: true,
-          rewrite: (path) => (path.replace(/^\/api/, '/api')),
-          configure: (proxy, options) => {
-            mutateCookieAttributes(proxy)
-            setHostHeader(proxy)
-          }
-        },
-        '^/portal_assets': {
           target: portalApiUrl,
           changeOrigin: true,
           configure: (proxy, options) => {
