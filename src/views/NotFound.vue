@@ -7,7 +7,7 @@
       <div>
         <img
           class="logo"
-          src="/portal_assets/logo"
+          :src="logoSrc"
           alt="logo"
         >
       </div>
@@ -35,9 +35,21 @@
 </template>
 
 <script>
-export default {
-  name: 'NotFound'
-}
+import { defineComponent } from 'vue'
+import usePortalApi from '@/hooks/usePortalApi'
+
+export default defineComponent({
+  name: 'NotFound',
+  setup () {
+    const { portalApiV2 } = usePortalApi()
+
+    const logoSrc = portalApiV2.value.getApiLink('/api/v2/portal/logo')
+
+    return {
+      logoSrc
+    }
+  }
+})
 </script>
 
 <style lang="scss" scoped>

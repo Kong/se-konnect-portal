@@ -76,7 +76,7 @@ export default defineComponent({
     const catalogView = ref(undefined)
     const catalogPageNumber = ref(1)
 
-    const { portalApi, portalApiV2 } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
     const loadAppearance = () => {
       return portalApiV2.value.service.portalApi.getPortalAppearance().then(res => {
@@ -91,7 +91,7 @@ export default defineComponent({
         }
 
         if (portalVariables.cover) {
-          const imageUrl = portalApi.value.getApiLink('/portal_assets/catalog_cover')
+          const imageUrl = portalApiV2.value.getApiLink('/api/v2/portal/catalog-cover')
 
           catalog_cover_style.value.backgroundImage = `url(${imageUrl})`
         }
@@ -151,7 +151,7 @@ export default defineComponent({
           console.error('failed to find Service Packages', e)
         }
       } finally {
-          loading.value = null
+        loading.value = null
       }
     }
 

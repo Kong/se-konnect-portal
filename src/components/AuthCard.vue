@@ -31,7 +31,7 @@ export default {
   setup () {
     const { portalApi } = usePortalApi()
 
-    const logoSrc = portalApi.value.getApiLink('/portal_assets/logo')
+    const logoSrc = portalApi.value.getApiLink('/api/v2/portal/logo')
 
     return {
       logoSrc

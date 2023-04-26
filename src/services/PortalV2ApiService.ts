@@ -172,7 +172,7 @@ export default class PortalV2ApiService {
   }
 
   getApiLink (path) {
-    if (this.baseURL === '/') {
+    if (this.baseURL === '') {
       return path
     } else {
       return new URL(path, this.baseURL).href
