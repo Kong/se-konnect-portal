@@ -24,7 +24,7 @@
             placeholder="search"
             data-testid="catalog-search"
             form="searchServicesForm"
-            @search="searchServices"
+            @input="searchServices"
           />
           <KButton
             form="searchServicesForm"
@@ -52,18 +52,19 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed, ref, onBeforeMount } from 'vue'
+<script lang="ts">
+import { defineComponent, ref, onBeforeMount } from 'vue'
 import usePortalApi from '@/hooks/usePortalApi'
 import Catalog from '@/components/Catalog.vue'
-import { baseUrl } from './../services/index'
+import { sortBy, SortOrder, SortType } from '@/helpers/sortBy'
+import { debounce } from '@/helpers/debounce'
 
 export default defineComponent({
   name: 'Services',
   components: { Catalog },
 
   setup () {
-    const catalog_cover_style = ref({})
+    const catalog_cover_style = ref<any>({})
     const welcome_message = ref('')
     const primary_header = ref('')
     const cardsPerPage = ref(12)
@@ -75,16 +76,6 @@ export default defineComponent({
     const catalogView = ref(undefined)
     const catalogPageNumber = ref(1)
 
-    const searchServicesUrl = computed(() => {
-      const queryParams = new URLSearchParams({
-        q: searchString.value,
-        join: 'versions',
-        limit: catalogView.value === 'grid' ? cardsPerPage.value : 0,
-        offset: catalogView.value === 'grid' ? cardsPerPage.value * (catalogPageNumber.value - 1) : 0
-      })
-
-      return '/portal_api/search/service_catalog?' + queryParams.toString()
-    })
     const { portalApi, portalApiV2 } = usePortalApi()
 
     const loadAppearance = () => {
@@ -117,41 +108,51 @@ export default defineComponent({
       }
     }
 
-    const searchServices = () => {
+    const searchServices = debounce(async () => {
       searchTriggered.value = true
       catalogPageNumber.value = 1
 
-      return fetchServices().finally(() => {
+      try {
+        return await fetchServices()
+      } finally {
         searchTriggered.value = false
-      })
-    }
+      }
+    })
 
-    const fetchServices = () => {
+    const fetchServices = async () => {
       loading.value = true
 
-      return portalApi.value.client.get(searchServicesUrl.value)
-        .then(res => {
-          totalCount.value = res.data.count
-          services.value = res.data.data.map(({ source }) => {
+      try {
+        try {
+          const { data: portalEntities } = await portalApiV2.value.service.searchApi.searchPortalEntities({
+            indices: 'product-catalog',
+            q: searchString.value,
+            pageNumber: catalogPageNumber.value,
+            pageSize: cardsPerPage.value,
+            join: 'versions'
+          })
+          const { data: sources, meta } = portalEntities
+
+          services.value = sources.map(({ source }) => {
             const versions = [...source.versions]
-              .sort((a, b) => new Date(a.created_at) - new Date(b.created_at))
+              .sort(sortBy('created_at', SortOrder.DESC, SortType.DATE))
               .map(version => version.version)
 
             return {
               id: source.id,
-              title: source.display_name ? source.display_name : source.name,
+              title: source.name,
               versions,
               description: source.description,
-              hasDocumentation: source.hasDocumentation
+              hasDocumentation: source.has_documentation
             }
           })
-        })
-        .catch(e => {
+          totalCount.value = meta.page.total
+        } catch (e) {
           console.error('failed to find Service Packages', e)
-        })
-        .finally(() => {
+        }
+      } finally {
           loading.value = null
-        })
+      }
     }
 
     const catalogViewChanged = viewType => {
@@ -183,7 +184,6 @@ export default defineComponent({
       searchTriggered,
       catalogView,
       catalogPageNumber,
-      searchServicesUrl,
       searchServices,
       catalogViewChanged,
       catalogPageChanged
