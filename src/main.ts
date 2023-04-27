@@ -39,75 +39,85 @@ async function init () {
 
   registerComponents(app)
 
-  const portalContext = await portalApiV2.service.portalApi.getPortalContext()
-
-  const {
-    portal_id: portalId,
-    org_id: orgId,
-    featureset_id: featuresetId,
-    oidc_auth_enabled: oidcAuthEnabled,
-    is_public: isPublic,
-    basic_auth_enabled: basicAuthEnabled,
-    dcr_provider_ids: dcrProviderIds,
-    rbac_enabled: isRbacEnabled
-  } = portalContext.data
-
-  if (isPublic === false) {
-    portalApi.updateClientWithCredentials()
-  }
-
-  const { setPortalData, setSession } = useAppStore()
-
-  const authClientConfig = { basicAuthEnabled, oidcAuthEnabled }
-
-  const isDcr = Array.isArray(dcrProviderIds) && dcrProviderIds.length > 0
-
-  setPortalData({ portalId, orgId, authClientConfig, featuresetId, isPublic, isDcr, isRbacEnabled })
-  setSession(session)
-
-  // Fetch session data from localStorage
-  await session.saveData(session.fetchData())
-
   const router = portalRouter()
 
-  if (!isPublic) {
-    if (session.authenticatedWithIdp()) {
-      let res
+  try {
+    const portalContext = await portalApiV2.service.portalApi.getPortalContext()
 
-      try {
-        res = await kongAuthApi.client.get('/api/v2/developer/me')
-      } catch (e) {
+    const {
+      portal_id: portalId,
+      org_id: orgId,
+      featureset_id: featuresetId,
+      oidc_auth_enabled: oidcAuthEnabled,
+      is_public: isPublic,
+      basic_auth_enabled: basicAuthEnabled,
+      dcr_provider_ids: dcrProviderIds,
+      rbac_enabled: isRbacEnabled
+    } = portalContext.data
+
+    if (isPublic === false) {
+      portalApi.updateClientWithCredentials()
+    }
+
+    const { setPortalData, setSession } = useAppStore()
+
+    const authClientConfig = { basicAuthEnabled, oidcAuthEnabled }
+
+    const isDcr = Array.isArray(dcrProviderIds) && dcrProviderIds.length > 0
+
+    setPortalData({ portalId, orgId, authClientConfig, featuresetId, isPublic, isDcr, isRbacEnabled })
+    setSession(session)
+
+    // Fetch session data from localStorage
+    await session.saveData(session.fetchData())
+
+    if (!isPublic) {
+      if (session.authenticatedWithIdp()) {
+        let res
+
+        try {
+          res = await kongAuthApi.client.get('/api/v2/developer/me')
+        } catch (e) {
         // // catch error to prevent going directly to global api error handler
-        res = { data: undefined }
-        // remove loginSuccess to adjust session check
-        removeQueryParam('loginSuccess')
-      }
+          res = { data: undefined }
+          // remove loginSuccess to adjust session check
+          removeQueryParam('loginSuccess')
+        }
 
-      await session.saveData({
-        ...session.data,
-        developer: res.data
-      })
+        await session.saveData({
+          ...session.data,
+          developer: res.data
+        })
+      }
+    }
+
+    const { initialize: initLaunchDarkly } = useLaunchDarkly()
+
+    await initLaunchDarkly()
+
+    app.use(router)
+
+    // Register the kong-auth-elements Vue plugin
+    app.use(KongAuthElementsPlugin, {
+      apiBaseUrl: kongAuthApiBaseUrl,
+      userEntity: 'developer',
+      shadowDom: false,
+      customErrorHandler: handleKongAuthElementsError,
+      developerConfig: {
+        portalId
+      }
+    })
+
+    app.mount('#app')
+  } catch (error) {
+    // This logic ensures that if the portalaccesstoken is invalid
+    // a user will not get stuck on the loading screen
+    if (error.response.status === 401) {
+      document.cookie = 'portalaccesstoken=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
+      session.destroy()
+      window.location.reload()
     }
   }
-
-  const { initialize: initLaunchDarkly } = useLaunchDarkly()
-
-  await initLaunchDarkly()
-
-  app.use(router)
-
-  // Register the kong-auth-elements Vue plugin
-  app.use(KongAuthElementsPlugin, {
-    apiBaseUrl: kongAuthApiBaseUrl,
-    userEntity: 'developer',
-    shadowDom: false,
-    customErrorHandler: handleKongAuthElementsError,
-    developerConfig: {
-      portalId
-    }
-  })
-
-  app.mount('#app')
 }
 
 init()
