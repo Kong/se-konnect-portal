@@ -23,10 +23,11 @@
           data-testid="credentials-list"
           :fetcher-cache-key="fetcherCacheKey"
           :fetcher="fetcher"
-          disable-pagination
           has-side-border
           is-small
           :headers="tableHeaders"
+          :pagination-page-sizes="ktablePaginationConfig.paginationPageSizes"
+          :initial-fetcher-params="{ pageSize: ktablePaginationConfig.initialPageSize }"
         >
           <template #id="{ row }">
             <CopyUuid
@@ -71,7 +72,7 @@
     >
       <template #body-content>
         <p class="copy-text">
-          {{ helpText.revokeModal.description(deletedKeyRow.display_name ? deletedKeyRow.display_name : deletedKeyRow.id) }}
+          {{ helpText.revokeModal.description(deletedKeyRow?.display_name ? deletedKeyRow?.display_name : deletedKeyRow?.id) }}
         </p>
       </template>
       <template #footer-content>
@@ -150,22 +151,24 @@
   </div>
 </template>
 
-<script>
+<script lang="ts">
 import { defineComponent, computed, ref } from 'vue'
 import useToaster from '@/composables/useToaster'
 import { useMachine } from '@xstate/vue'
 import { createMachine } from 'xstate'
 import getMessageFromError from '@/helpers/getMessageFromError'
-import useLDFeatureFlag from '@/hooks/useLDFeatureFlag'
-import { FeatureFlags } from '@/constants/feature-flags'
 
 import { useI18nStore } from '@/stores'
 import usePortalApi from '@/hooks/usePortalApi'
-import PageTitle from '../../components/PageTitle'
-import ActionsDropdown from '../../components/ActionsDropdown'
-
-import DisplayNameModal from '../../components/DisplayNameModal'
+// TODO: remove `ts-ignore` once typescript is enabled across the project
+// @ts-ignore
+import PageTitle from '@/components/PageTitle'
+// @ts-ignore
+import ActionsDropdown from '@/components/ActionsDropdown'
+// @ts-ignore
+import DisplayNameModal from '@/components/DisplayNameModal'
 import CopyButton from '@/components/CopyButton'
+import { GetCredentialsResponseDataInner } from '@kong/sdk-portal-js'
 
 export default defineComponent({
   name: 'CredentialsList',
@@ -193,8 +196,13 @@ export default defineComponent({
     const updatedDisplayName = ref('')
     const credentialKey = ref('')
     const copyCredentialDisplayName = ref('')
-    const renameKeyRow = ref({})
-    const deletedKeyRow = ref({})
+    const renameKeyRow = ref<GetCredentialsResponseDataInner | null>(null)
+    const deletedKeyRow = ref<GetCredentialsResponseDataInner | null>(null)
+
+    const ktablePaginationConfig = ref({
+      paginationPageSizes: [25, 50, 100],
+      initialPageSize: 25
+    })
 
     const { portalApiV2 } = usePortalApi()
 
@@ -218,15 +226,18 @@ export default defineComponent({
       key.value += 1
     }
 
-    const fetcher = async () => {
+    const fetcher = async (payload: { pageSize: number; page: number }) => {
+      const { pageSize, page: pageNumber } = payload
+      const apiOptions = { applicationId: props.id, pageNumber, pageSize }
+
       send('FETCH')
 
-      return portalApiV2.value.service.credentialsApi.getManyCredentials({ applicationId: props.id }).then((res) => {
+      return portalApiV2.value.service.credentialsApi.getManyCredentials(apiOptions).then((res) => {
         send('RESOLVE')
 
         return {
           data: res.data.data,
-          total: res.data.data.length
+          total: res.data.meta.page.total
         }
       }).catch((e) => {
         return handleError(e)
@@ -236,7 +247,7 @@ export default defineComponent({
       displayNameModalVisible.value = true
     }
 
-    const handleCredentialSubmit = (displayName) => {
+    const handleCredentialSubmit = (displayName: { value: string }) => {
       if (!displayName.value) {
         displayNameModalVisible.value = false
 
@@ -264,10 +275,10 @@ export default defineComponent({
         })
     }
 
-    const handleRenameCredentialSubmit = (updatedDisplayName) => {
-      if (!updatedDisplayName.value || updatedDisplayName.value === renameKeyRow.value.display_name) {
+    const handleRenameCredentialSubmit = (updatedDisplayName: { value: string }) => {
+      if (!updatedDisplayName.value || updatedDisplayName.value === renameKeyRow.value?.display_name) {
         displayNameModalVisible.value = false
-        renameKeyRow.value = {}
+        renameKeyRow.value = null
         updatedDisplayName.value = ''
 
         return
@@ -282,7 +293,7 @@ export default defineComponent({
       })
         .then(() => {
           displayNameModalVisible.value = false
-          renameKeyRow.value = {}
+          renameKeyRow.value = null
           handleSuccess('updated', updatedDisplayName.value)
           updatedDisplayName.value = ''
           revalidate()
@@ -299,7 +310,7 @@ export default defineComponent({
       })
         .then(() => {
           handleSuccess('revoked')
-          deletedKeyRow.value = {}
+          deletedKeyRow.value = null
           deleteCredentialModalVisible.value = false
           revalidate()
         })
@@ -310,7 +321,7 @@ export default defineComponent({
 
     const handleCloseDisplayNameModal = () => {
       displayNameModalVisible.value = false
-      renameKeyRow.value = {}
+      renameKeyRow.value = null
     }
 
     const handleCloseCopyCredentialModal = () => {
@@ -321,20 +332,20 @@ export default defineComponent({
 
     const handleCloseDeleteCredentialModal = () => {
       deleteCredentialModalVisible.value = false
-      deletedKeyRow.value = {}
+      deletedKeyRow.value = null
     }
 
-    const handleDeleteCredentialModal = (keyRowValue) => {
+    const handleDeleteCredentialModal = (keyRowValue: { id: string; display_name: string }) => {
       deleteCredentialModalVisible.value = true
       deletedKeyRow.value = keyRowValue
     }
 
-    const handleRenameCredentialModal = (keyRowValue) => {
+    const handleRenameCredentialModal = (keyRowValue: { id: string; display_name: string }) => {
       displayNameModalVisible.value = true
       renameKeyRow.value = keyRowValue
     }
 
-    const copyTokenToClipboard = (executeCopy) => {
+    const copyTokenToClipboard = (executeCopy: (arg0: string) => any) => {
       if (!executeCopy(credentialKey.value)) {
         notify({
           appearance: 'danger',
@@ -350,7 +361,7 @@ export default defineComponent({
       credentialKey.value = ''
     }
 
-    const handleSuccess = (action, name) => {
+    const handleSuccess = (action: string, name = null) => {
       if (name) {
         notify({
           message: `Credential "${name}" successfully ${action}`
@@ -362,7 +373,7 @@ export default defineComponent({
       }
     }
 
-    const handleError = (error) => {
+    const handleError = (error: any) => {
       notify({
         appearance: 'danger',
         message: getMessageFromError(error)
@@ -393,7 +404,8 @@ export default defineComponent({
       handleCreateCredential,
       handleDeleteCredentialSubmit,
       fetcherCacheKey,
-      fetcher
+      fetcher,
+      ktablePaginationConfig
     }
   }
 
