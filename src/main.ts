@@ -124,8 +124,8 @@ async function init () {
   } catch (error) {
     // This logic ensures that if the portalaccesstoken is invalid
     // a user will not get stuck on the loading screen
-    if (error.response.status === 401) {
-      document.cookie = 'portalaccesstoken=;expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    if (error?.response?.status === 401 && window.location.hostname.includes('localhost')) {
+      document.cookie = `portalaccesstoken=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/; domain=${window.location.hostname};`
       session.destroy()
       window.location.reload()
     }
