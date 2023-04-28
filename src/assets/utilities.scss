@@ -190,3 +190,9 @@
   text-transform: uppercase;
   vertical-align: middle;
 }
+
+// make uuid-icon-wrapper inline-block so it stays on the same line
+.uuid-icon-wrapper {
+  display: flex;
+  margin-left: 4px;
+}

@@ -24,6 +24,9 @@ import './main.css'
 
 // Globally defined components
 import { registerComponents } from './components/registerComponents'
+import CopyUuid, { CopyUuidNotifyParam } from '@kong-ui-public/copy-uuid'
+import '@kong-ui-public/copy-uuid/dist/style.css'
+import useToaster from './composables/useToaster'
 
 /**
  * Initialize application
@@ -105,6 +108,15 @@ async function init () {
       customErrorHandler: handleKongAuthElementsError,
       developerConfig: {
         portalId
+      }
+    })
+
+    app.use(CopyUuid, {
+      notify: (props: CopyUuidNotifyParam) => {
+        useToaster().notify({
+          appearance: props.type === 'error' ? 'danger' : 'success',
+          message: props.message
+        })
       }
     })
 

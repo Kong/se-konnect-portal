@@ -28,9 +28,10 @@
           is-small
           :headers="tableHeaders"
         >
-          <template #key="{ row }">
-            <CopyUUID
-              :uuid="row.key"
+          <template #id="{ row }">
+            <CopyUuid
+              class="flex"
+              :uuid="row.id"
               :truncated="false"
             />
           </template>
@@ -162,13 +163,13 @@ import { useI18nStore } from '@/stores'
 import usePortalApi from '@/hooks/usePortalApi'
 import PageTitle from '../../components/PageTitle'
 import ActionsDropdown from '../../components/ActionsDropdown'
-import CopyUUID from '../../components/CopyUUID'
+
 import DisplayNameModal from '../../components/DisplayNameModal'
 import CopyButton from '@/components/CopyButton'
 
 export default defineComponent({
   name: 'CredentialsList',
-  components: { PageTitle, ActionsDropdown, CopyUUID, CopyButton, DisplayNameModal },
+  components: { PageTitle, ActionsDropdown, CopyButton, DisplayNameModal },
   props: {
     id: {
       type: String,
@@ -450,6 +451,16 @@ export default defineComponent({
       &.copy-label {
         color: var(--black-85);
         font-weight: 500;
+      }
+    }
+  }
+
+  .credentials-list {
+    :deep(.kong-ui-copy-uuid) {
+      align-items: center;
+
+      .uuid-icon-wrapper {
+        height: 16px;
       }
     }
   }
