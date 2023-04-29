@@ -29,14 +29,6 @@
             <ActionsDropdown>
               <template #content>
                 <div
-                  v-if="row.status === 'unregistered'"
-                  class="py-2 px-2 type-md cursor-pointer"
-                  @click="handleCreateRegistration(row.id)"
-                >
-                  Register
-                </div>
-                <div
-                  v-else
                   class="py-2 px-2 type-md cursor-pointer"
                   @click="handleDeleteRegistration(row.registrationId)"
                 >
@@ -101,7 +93,7 @@ export default {
       { key: 'actions', hideLabel: true }
     ]
 
-    const { portalApi } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
     const { state: currentState, send } = useMachine(
       createMachine({
@@ -126,41 +118,34 @@ export default {
     const fetcher = async () => {
       send('FETCH')
 
-      return portalApi.value.client.get(`/portal_api/applications/${props.id}/registrations`).then((res) => {
-        send('RESOLVE')
+      return portalApiV2.value.service.registrationsApi.getManyApplicationRegistrations({ applicationId: props.id })
+        .then(({ data }) => {
+          send('RESOLVE')
 
-        return {
-          data: res.data.data.map(service => {
-            return {
-              name: service.service_version.service_package.name,
-              display_name: service.service_version.service_package.display_name,
-              version: service.service_version.version,
-              id: service.service_version.id,
-              specLink: `/spec/${service.service_version.service_package.id}/${service.service_version.version}`,
-              status: service.status,
-              registrationId: service.id
-            }
-          }),
-          total: res.data.total
-        }
-      }).catch((e) => {
-        handleError(e)
-      })
-    }
-
-    const handleCreateRegistration = (serviceVersionId) => {
-      portalApi.value.client.post(`/portal_api/applications/${props.id}/registrations`, {
-        service_version: serviceVersionId
-      })
-        .then(() => {
-          handleSuccess('registered')
-          revalidate()
+          return {
+            data: data.data.map(registration => {
+              return {
+                name: registration.product_name,
+                version: registration.product_version_name,
+                id: registration.product_version_id,
+                specLink: `/spec/${registration.product_id}/${registration.product_version_id}`,
+                status: registration.status,
+                registrationId: registration.id
+              }
+            }),
+            total: data.meta.page.total
+          }
+        }).catch((e) => {
+          handleError(e)
         })
-        .catch(error => handleError(error))
     }
+
 
     const handleDeleteRegistration = (registrationId) => {
-      portalApi.value.client.delete(`/portal_api/applications/${props.id}/registrations/${registrationId}`)
+      portalApiV2.value.service.registrationsApi.deleteApplicationRegistration({
+        applicationId: props.id,
+        registrationId: registrationId
+      })
         .then(() => {
           handleSuccess('unregistered')
           revalidate()
@@ -184,7 +169,6 @@ export default {
     return {
       tableHeaders,
       currentState,
-      handleCreateRegistration,
       handleDeleteRegistration,
       fetcher,
       fetcherCacheKey

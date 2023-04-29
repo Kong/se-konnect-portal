@@ -12,7 +12,11 @@
       </span>
     </template>
     <template #body-content>
-      <div v-if="!currentState.matches('success_application_status_is_pending')">
+      <KSkeleton
+        v-if="currentState.matches('pending')"
+        :delay-milliseconds="200"
+      />
+      <div v-else-if="!currentState.matches('success_application_status_is_pending')">
         <KAlert
           v-if="currentState.matches('error') "
           appearance="danger"
@@ -111,8 +115,8 @@
   </KModal>
 </template>
 
-<script>
-import { defineComponent, computed, ref, watch } from 'vue'
+<script lang="ts">
+import { computed, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useMachine } from '@xstate/vue'
 import { createMachine } from 'xstate'
@@ -120,6 +124,7 @@ import useToaster from '@/composables/useToaster'
 import usePortalApi from '@/hooks/usePortalApi'
 import { useI18nStore } from '@/stores'
 import getMessageFromError from '@/helpers/getMessageFromError'
+import { fetchAll } from '@/helpers/fetchAll'
 
 export default {
   name: 'ViewSpecRegistrationModal',
@@ -154,7 +159,7 @@ export default {
     const selectedApplication = ref('')
     const applications = ref([])
 
-    const { portalApi } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
     const { state: currentState, send } = useMachine(
       createMachine({
@@ -198,8 +203,8 @@ export default {
 
     const availableApplications = computed(() => {
       return applications.value.filter(app => {
-        if (app.registrations.length > 0) {
-          return app.registrations.every(r => r.service_version.id !== props.version?.id)
+        if (app?.registrations?.length > 0) {
+          return app.registrations.every(r => r.product_version_id !== props.version?.id)
         }
 
         return app
@@ -208,13 +213,23 @@ export default {
 
     const registeredApplications = computed(() => {
       return applications.value.filter(app => {
-        if (app.registrations.length > 0) {
-          return app.registrations.some(r => r.service_version.id === props.version?.id)
+        if (app?.registrations?.length > 0) {
+          return app.registrations.some(r => r.product_version_id === props.version?.id)
         }
 
         return app
       })
     })
+
+    const attachRegistrations = async (apps) => {
+      const appsWithReg = await Promise.all(apps.map(async app => {
+        app.registrations = await fetchAll((meta) => portalApiV2.value.service.registrationsApi.getManyApplicationRegistrations({ applicationId: app.id, ...meta }))
+
+        return app
+      }))
+
+      return appsWithReg
+    }
 
     const initializeSelectedApplication = () => {
       // no available applications, return
@@ -233,13 +248,14 @@ export default {
 
     const fetchApplications = () => {
       send('FETCH')
-      portalApi.value.client.get('/portal_api/applications')
-        .then(res => {
-          send('RESOLVE')
-          applications.value = res.data.data
+      fetchAll((meta) => portalApiV2.value.service.applicationsApi.getManyApplications(meta))
+        .then(async (apps) => {
+          applications.value = await attachRegistrations(apps)
           selectedApplication.value = initializeSelectedApplication()
+          send('RESOLVE')
         })
         .catch(error => {
+          console.error(error)
           send('REJECT', {
             errorMessage: getMessageFromError(error)
           })
@@ -248,8 +264,11 @@ export default {
 
     const submitSelection = () => {
       send('CLICK_SUBMIT')
-      portalApi.value.client.post(`/portal_api/applications/${selectedApplication.value}/registrations`, {
-        service_version: props.version.id
+      portalApiV2.value.service.registrationsApi.createApplicationRegistration({
+        applicationId: selectedApplication.value,
+        createRegistrationPayload: {
+          product_version_id: props.version.id
+        }
       })
         .then(
           /** @param {import('axios').AxiosResponse<{status: 'approved'|'pending'}>} res */
@@ -260,7 +279,7 @@ export default {
               send('REGISTERED_APPROVED')
               message += 'approved'
               notify({ message })
-              $router.replace({ name: 'show-application', params: { application_id: res.data.application.id } })
+              $router.replace({ name: 'show-application', params: { application_id: res.data.application_id } })
             } else if (res.data.status === 'pending') {
               send('REGISTERED_PENDING')
               message += 'requested'
