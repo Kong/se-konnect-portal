@@ -41,11 +41,12 @@
             has-side-border
             :has-error="currentState.matches('error')"
             :is-loading="currentState.matches('pending')"
-            disable-pagination
             :headers="tableHeaders"
             is-clickable
             is-small
             class="applications-table"
+            :pagination-page-sizes="paginationConfig.paginationPageSizes"
+            :initial-fetcher-params="{ pageSize: paginationConfig.initialPageSize }"
             @row:click="(_, row) => $router.push({ name: 'show-application', params: { application_id: row.id }})"
           >
             <template #name="{ row }">
@@ -149,13 +150,17 @@
   </Content>
 </template>
 
-<script>
-import { defineComponent, computed, ref, onMounted } from 'vue'
+<script lang="ts">
+import { defineComponent, computed, ref } from 'vue'
 import { useMachine } from '@xstate/vue'
 import { createMachine } from 'xstate'
 import getMessageFromError from '@/helpers/getMessageFromError'
+// TODO: remove `ts-ignore` once typescript is enabled across the project
+// @ts-ignore
 import RefreshTokenModal from '../components/RefreshTokenModal'
+// @ts-ignore
 import PageTitle from '../components/PageTitle'
+// @ts-ignore
 import ActionsDropdown from '../components/ActionsDropdown'
 import usePortalApi from '@/hooks/usePortalApi'
 import useToaster from '@/composables/useToaster'
@@ -180,6 +185,11 @@ export default defineComponent({
     const appStore = useAppStore()
     const { isDcr } = storeToRefs(appStore)
 
+    const paginationConfig = ref({
+      paginationPageSizes: [25, 50, 100],
+      initialPageSize: 25
+    })
+
     const modalTitle = computed(() => `Delete ${deleteItem.value?.name}`)
 
     const { state: currentState, send } = useMachine(createMachine({
@@ -198,11 +208,14 @@ export default defineComponent({
       key.value += 1
     }
 
-    const fetcher = async () => {
+    const fetcher = async (payload: { pageSize: number; page: number }) => {
+      const { pageSize, page: pageNumber } = payload
+      const reqPayload = { pageNumber, pageSize }
+
       send('FETCH')
 
       return portalApiV2.value.service.applicationsApi
-        .getManyApplications()
+        .getManyApplications(reqPayload)
         .then((res) => {
           send('RESOLVE')
 
@@ -238,8 +251,8 @@ export default defineComponent({
         })
     }
 
-    const handleRefreshSecret = (id) => {
-      portalApiV2.value.service.applicationsApi.refreshApplicationToken({ applicationId: id })
+    const handleRefreshSecret = (id: string) => {
+      portalApiV2.value.service.credentialsApi.refreshApplicationToken({ applicationId: id })
         .then((res) => {
           notify({
             message: 'Successfully refreshed secret'
@@ -280,7 +293,8 @@ export default defineComponent({
       onModalClose,
       handleRefreshSecret,
       fetcherCacheKey,
-      fetcher
+      fetcher,
+      paginationConfig
     }
   }
 })
