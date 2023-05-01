@@ -90,6 +90,17 @@ const helpText = {
       }
     }
   },
+  serviceList: {
+    title: 'Services',
+    actions: {
+      unregister: 'Unregister'
+    },
+    emptyState: {
+      title: 'No Services',
+      viewCatalog1: 'View the catalog',
+      viewCatalog2: 'to register to a service.'
+    }
+  },
   dcrAuthentication: {
     authentication: 'Authentication',
     refreshToken: 'Refresh Token'

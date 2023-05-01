@@ -2,7 +2,7 @@
   <div class="services-list">
     <PageTitle class="mb-5">
       <h2 class="font-normal type-lg m-0">
-        Services
+        {{ helpText.title }}
       </h2>
     </PageTitle>
     <KCard>
@@ -13,10 +13,11 @@
           :fetcher="fetcher"
           has-side-border
           :is-loading="currentState.matches('pending')"
-          disable-pagination
           :headers="tableHeaders"
           is-clickable
           is-small
+          :pagination-page-sizes="paginationConfig.paginationPageSizes"
+          :initial-fetcher-params="{ pageSize: paginationConfig.initialPageSize }"
           @row:click="(_, row) => $router.push(row.specLink)"
         >
           <template #name="{ row }">
@@ -32,7 +33,7 @@
                   class="py-2 px-2 type-md cursor-pointer"
                   @click="handleDeleteRegistration(row.registrationId)"
                 >
-                  Unregister
+                  {{ helpText.actions.unregister }}
                 </div>
               </template>
             </ActionsDropdown>
@@ -44,15 +45,15 @@
               <template
                 #title
               >
-                No Services
+                {{ helpText.emptyState.title }}
               </template>
               <template #message>
                 <div>
                   <router-link
                     :to="{ name: 'catalog' }"
                   >
-                    View the catalog
-                  </router-link> to register to a service.
+                    {{ helpText.emptyState.viewCatalog1 }}
+                  </router-link> {{ helpText.emptyState.viewCatalog2 }}
                 </div>
               </template>
             </EmptyState>
@@ -63,16 +64,21 @@
   </div>
 </template>
 
-<script>
-import { defineComponent, computed, ref, onMounted } from 'vue'
+<script lang="ts">
+import { computed, ref } from 'vue'
 import { useMachine } from '@xstate/vue'
 import { createMachine } from 'xstate'
 import getMessageFromError from '@/helpers/getMessageFromError'
 import useToaster from '@/composables/useToaster'
-
+import { useI18nStore } from '@/stores'
 import usePortalApi from '@/hooks/usePortalApi'
+
+// TODO: remove `ts-ignore` once typescript is enabled across the project
+// @ts-ignore
 import PageTitle from '../../components/PageTitle'
+// @ts-ignore
 import StatusBadge from '../../components/StatusBadge'
+// @ts-ignore
 import ActionsDropdown from '../../components/ActionsDropdown'
 
 export default {
@@ -85,6 +91,7 @@ export default {
     }
   },
   setup (props) {
+    const helpText = useI18nStore().state.helpText.serviceList
     const { notify } = useToaster()
     const tableHeaders = [
       { label: 'Service', key: 'name' },
@@ -111,14 +118,22 @@ export default {
     const key = ref(0)
     const fetcherCacheKey = computed(() => key.value.toString())
 
+    const paginationConfig = ref({
+      paginationPageSizes: [25, 50, 100],
+      initialPageSize: 25
+    })
+
     const revalidate = () => {
       key.value += 1
     }
 
-    const fetcher = async () => {
+    const fetcher = async (payload: { pageSize: number; page: number }) => {
+      const { pageSize, page: pageNumber } = payload
+      const reqPayload = { applicationId: props.id, pageNumber, pageSize }
+
       send('FETCH')
 
-      return portalApiV2.value.service.registrationsApi.getManyApplicationRegistrations({ applicationId: props.id })
+      return portalApiV2.value.service.registrationsApi.getManyApplicationRegistrations(reqPayload)
         .then(({ data }) => {
           send('RESOLVE')
 
@@ -140,8 +155,7 @@ export default {
         })
     }
 
-
-    const handleDeleteRegistration = (registrationId) => {
+    const handleDeleteRegistration = (registrationId: string) => {
       portalApiV2.value.service.registrationsApi.deleteApplicationRegistration({
         applicationId: props.id,
         registrationId: registrationId
@@ -167,11 +181,13 @@ export default {
     }
 
     return {
+      helpText,
       tableHeaders,
       currentState,
       handleDeleteRegistration,
       fetcher,
-      fetcherCacheKey
+      fetcherCacheKey,
+      paginationConfig
     }
   }
 }
