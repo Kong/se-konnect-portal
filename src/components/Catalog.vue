@@ -37,13 +37,11 @@
         :total-count="totalCount"
         :search-triggered="searchTriggered"
         :loading="loading"
-        :show-documentation-links="true"
         @page-changed="$emit('cards-page-changed', $event)"
       />
       <CatalogTableList
         v-else
         :services="services"
-        :show-documentation-links="true"
       />
     </div>
   </div>

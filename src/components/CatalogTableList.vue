@@ -33,7 +33,7 @@
           Specification
         </router-link>
         <router-link
-          v-if="showDocumentationLinks && row.hasDocumentation"
+          v-if="row.hasDocumentation"
           :to="{ name: 'api-documentation-page', params: { service_package: row.id } }"
           class="link"
         >
@@ -54,10 +54,6 @@ export default defineComponent({
     services: {
       type: Array,
       default: () => []
-    },
-    showDocumentationLinks: {
-      type: Boolean,
-      default: false
     }
   },
   setup (props) {
@@ -96,9 +92,7 @@ export default defineComponent({
         { label: 'Title', key: 'title' },
         { label: 'Description', key: 'description' },
         { label: 'Latest Version', key: 'versions' },
-        ...this.showDocumentationLinks ? [
-          { label: 'Details', key: 'links' }
-        ] : []
+        { label: 'Details', key: 'links' }
       ]
     }
   }

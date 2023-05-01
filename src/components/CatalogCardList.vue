@@ -7,7 +7,6 @@
         class="catalog-item"
         :service="service"
         :loading="loading"
-        :show-documentation-link="showDocumentationLinks"
       />
     </div>
     <PaginationBar
@@ -48,10 +47,6 @@ export default {
       default: false
     },
     loading: {
-      type: Boolean,
-      default: false
-    },
-    showDocumentationLinks: {
       type: Boolean,
       default: false
     }

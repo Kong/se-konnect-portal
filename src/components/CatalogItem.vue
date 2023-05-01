@@ -1,5 +1,5 @@
 <template>
-  <KCard :class="{ 'show-docs': showDocumentationLink }">
+  <KCard class="show-docs">
     <template #title>
       <p
         v-if="loading"
@@ -73,7 +73,7 @@
             </template>
           </div>
           <div
-            v-if="showDocumentationLink && hasDocumentation"
+            v-if="service.hasDocumentation"
             class="details-item"
           >
             <template v-if="loading">
@@ -101,8 +101,6 @@
 </template>
 
 <script lang="ts">
-import usePortalApi from '@/hooks/usePortalApi'
-import { ref } from 'vue'
 
 export default {
   name: 'CatalogItem',
@@ -114,28 +112,6 @@ export default {
     loading: {
       type: Boolean,
       default: false
-    },
-    showDocumentationLink: {
-      type: Boolean,
-      default: false
-    }
-  },
-
-  setup () {
-    const { portalApi } = usePortalApi()
-
-    const checkServiceHasDocumentation = function (id) {
-      return portalApi.value.client.post('/portal_api/service_packages/' + id + '/has_documentation', {
-        resource_kind: 'services',
-        resource_ids: [id]
-      })
-    }
-
-    const hasDocumentation = ref(false)
-
-    return {
-      checkServiceHasDocumentation,
-      hasDocumentation
     }
   },
   data () {
@@ -147,14 +123,6 @@ export default {
     },
     versionLabel () {
       return this.service.versions.length === 1 ? 'Version: ' : 'Versions: '
-    }
-  },
-  mounted () {
-    if (this.service) {
-      this.checkServiceHasDocumentation(this.service.id)
-        .then((response) => {
-          this.hasDocumentation = response.data.has_documentation
-        })
     }
   }
 }
