@@ -581,16 +581,16 @@
   resolved "https://registry.yarnpkg.com/@kong/kauth-client-typescript-axios/-/kauth-client-typescript-axios-0.1884.0.tgz#23915b43c213f63c1b4ea36126d363a579cf46d8"
   integrity sha512-ekJsPAks6v+lSj0PXLunLrJZUJABtR/74C9QrtIHiNgTrA7SrcTmUPRlNKm2SuID8n6vC/cem29RG+Kh35HdCA==
 
-"@kong/kong-auth-elements@1.33.1":
-  version "1.33.1"
-  resolved "https://registry.yarnpkg.com/@kong/kong-auth-elements/-/kong-auth-elements-1.33.1.tgz#fd2bbcc65a337a47a44327ff14484a64ceb73c28"
-  integrity sha512-XQiPni2D5XNiHjnUarW1K2ZMha+zUiFSV0j32VWA+ZZl+SkJd/pJbQ65Z3nxd2VebAoHzz8WjEFaqD8yf7VhJg==
+"@kong/kong-auth-elements@2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@kong/kong-auth-elements/-/kong-auth-elements-2.0.0.tgz#03abeb722d8309feedbd1570cb0c5f07a227103b"
+  integrity sha512-iLgT9mP7sirjF42iihlAZ2Fd3ksXgoDI1bpDa9eUaRzCwOfCvEuaYDt/54ZRQqwY80GQbc27Bxt7bBk8Qh4+yg==
   dependencies:
     "@xstate/vue" "^0.8.1"
     axios "^0.27.2"
     vue "^3.2.47"
     vue-recaptcha "^2.0.3"
-    xstate "^4.37.0"
+    xstate "^4.37.2"
 
 "@kong/kongponents@8.33.4":
   version "8.33.4"
@@ -7645,10 +7645,15 @@ xml@=1.0.1:
   resolved "https://registry.yarnpkg.com/xml/-/xml-1.0.1.tgz#78ba72020029c5bc87b8a81a3cfcd74b4a2fc1e5"
   integrity sha512-huCv9IH9Tcf95zuYCsQraZtWnJvBtLVE0QHMOs8bWyZAFZNDcYjsPq1nEx8jKA9y+Beo9v+7OBPRisQTjinQMw==
 
-xstate@4.37.0, xstate@^4.37.0:
+xstate@4.37.0:
   version "4.37.0"
   resolved "https://registry.yarnpkg.com/xstate/-/xstate-4.37.0.tgz#2f253ccbfc2dc6954ff975b8102714bde9751726"
   integrity sha512-YC+JCerRclKS9ixQTuw8l3vs3iFqWzNzOGR0ID5XsSlieMXIV9nNPE43h9CGr7VdxA1QYhMwhCZA0EdpOd17Bg==
+
+xstate@^4.37.2:
+  version "4.37.2"
+  resolved "https://registry.yarnpkg.com/xstate/-/xstate-4.37.2.tgz#c5f4c1d8062784238b91e2dfddca05f821cb4eac"
+  integrity sha512-Qm337O49CRTZ3PRyRuK6b+kvI+D3JGxXIZCTul+xEsyFCVkTFDt5jixaL1nBWcUBcaTQ9um/5CRGVItPi7fveg==
 
 xtend@^4.0.0, xtend@^4.0.2:
   version "4.0.2"
