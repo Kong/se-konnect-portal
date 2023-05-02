@@ -88,6 +88,7 @@
         data-testid="create-application"
         :is-rounded="false"
         appearance="primary"
+        :disabled="currentState.matches('pending')"
         class="mr-3"
         :to="{ name: 'create-application', query: { service_package: $route.params.service_package, service_version: $route.params.service_version } }"
       >
@@ -98,6 +99,7 @@
         data-testid="submit-registration"
         :is-rounded="false"
         appearance="primary"
+        :disabled="currentState.matches('pending')"
         class="mr-3"
         @click="currentState.matches('success_application_status_is_pending') ? closeModal() : submitSelection()"
       >
