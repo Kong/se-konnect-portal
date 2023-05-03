@@ -8,7 +8,7 @@ import { removeQueryParam } from './router/route-utils'
 
 import useLaunchDarkly from '@/composables/useLaunchDarkly'
 
-import { kongAuthApiBaseUrl, portalApi, portalApiV2, session, kongAuthApi } from '@/services'
+import { kongAuthApiBaseUrl, session } from '@/services'
 
 // Import kong-auth-elements, styles, and options interface
 import { KongAuthElementsPlugin } from '@kong/kong-auth-elements/dist/kong-auth-elements.es'
@@ -27,6 +27,7 @@ import { registerComponents } from './components/registerComponents'
 import CopyUuid, { CopyUuidNotifyParam } from '@kong-ui-public/copy-uuid'
 import '@kong-ui-public/copy-uuid/dist/style.css'
 import useToaster from './composables/useToaster'
+import usePortalApi from './hooks/usePortalApi'
 
 /**
  * Initialize application
@@ -43,9 +44,10 @@ async function init () {
   registerComponents(app)
 
   const router = portalRouter()
+  const { portalApiV2 } = usePortalApi()
 
   try {
-    const portalContext = await portalApiV2.service.portalApi.getPortalContext()
+    const portalContext = await portalApiV2.value.service.portalApi.getPortalContext()
 
     const {
       portal_id: portalId,
@@ -59,7 +61,7 @@ async function init () {
     } = portalContext.data
 
     if (isPublic === false) {
-      portalApi.updateClientWithCredentials()
+      portalApiV2.value.updateClientWithCredentials()
     }
 
     const { setPortalData, setSession } = useAppStore()
@@ -79,7 +81,7 @@ async function init () {
         let res
 
         try {
-          res = await kongAuthApi.client.get('/api/v2/developer/me')
+          res = await portalApiV2.value.service.developerApi.getDeveloperMe()
         } catch (e) {
         // // catch error to prevent going directly to global api error handler
           res = { data: undefined }

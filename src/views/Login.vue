@@ -52,6 +52,7 @@ import { useMachine } from '@xstate/vue'
 import { createMachine } from 'xstate'
 import AuthCard from '../components/AuthCard'
 import useKongAuthApi from '@/hooks/useKongAuthApi'
+import usePortalApi from '@/hooks/usePortalApi'
 import useLaunchDarkly from '@/composables/useLaunchDarkly'
 import { useRouter } from 'vue-router'
 import { useI18nStore, useAppStore } from '@/stores'
@@ -63,7 +64,7 @@ export default defineComponent({
   },
   setup () {
     const errorMessage = ref('')
-    const { kongAuthApi } = useKongAuthApi()
+    const { portalApiV2 } = usePortalApi()
     const helpText = useI18nStore().state.helpText
     const appStore = useAppStore()
     const {
@@ -121,43 +122,42 @@ export default defineComponent({
     const onLoginSuccess = () => {
       send('KAUTH_SUCCESS')
 
-      kongAuthApi.value.client
-        .get('/api/v2/developer/me').then(async res => {
-          send('USER_FETCH_SUCCESS')
+      portalApiV2.value.service.developerApi.getDeveloperMe().then(async res => {
+        send('USER_FETCH_SUCCESS')
 
-          session.value.saveData({
-            ...session.value.data,
-            developer: res.data
-          })
-
-          let fullPath = '/'
-
-          if (session.value.data.to) {
-            // If we have previous path which we tried to access but got 403
-            // set is to next url
-            fullPath = session.value.data.to
-          }
-
-          // update launch darkly user context after successful login
-          try {
-            await initLaunchDarkly()
-          } catch (e) {
-            console.error('Unable to update LD context')
-          }
-
-          window.location.href = fullPath
-        }).catch(error => {
-          send('USER_FETCH_FAIL')
-
-          const { data } = error.response
-          if (error.response.status === 401) {
-            errorMessage.value = helpText.login.unauthenticated
-
-            return
-          }
-
-          errorMessage.value = getError(data, error)
+        session.value.saveData({
+          ...session.value.data,
+          developer: res.data
         })
+
+        let fullPath = '/'
+
+        if (session.value.data.to) {
+          // If we have previous path which we tried to access but got 403
+          // set is to next url
+          fullPath = session.value.data.to
+        }
+
+        // update launch darkly user context after successful login
+        try {
+          await initLaunchDarkly()
+        } catch (e) {
+          console.error('Unable to update LD context')
+        }
+
+        window.location.href = fullPath
+      }).catch(error => {
+        send('USER_FETCH_FAIL')
+
+        const { data } = error.response
+        if (error.response.status === 401) {
+          errorMessage.value = helpText.login.unauthenticated
+
+          return
+        }
+
+        errorMessage.value = getError(data, error)
+      })
     }
 
     onMounted(() => {
