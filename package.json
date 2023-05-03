@@ -19,7 +19,6 @@
     "@kong-ui-public/copy-uuid": "^0.3.15",
     "@kong-ui-public/document-viewer": "^0.5.18",
     "@kong-ui-public/spec-renderer": "^0.7.4",
-    "@kong/dochub-portal-axios": "^0.0.256",
     "@kong/kauth-client-typescript-axios": "^0.1884.0",
     "@kong/kong-auth-elements": "2.0.0",
     "@kong/kongponents": "8.33.4",
