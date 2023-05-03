@@ -37,14 +37,17 @@ import { storeToRefs } from 'pinia'
 import getMessageFromError from '@/helpers/getMessageFromError'
 import usePortalApi from '@/hooks/usePortalApi'
 import { useI18nStore, useServicePackageStore } from '@/stores'
-import Sidebar from '@/components/service/Sidebar.vue'
+// @ts-ignore
+import Sidebar from '@/components/service/Sidebar'
 import useToaster from '@/composables/useToaster'
+import { DocumentContentTypeEnum } from '@kong/sdk-portal-js'
+import { fetchAll } from '@/helpers/fetchAll'
 
 const { notify } = useToaster()
 const helpText = useI18nStore().state.helpText
 const route = useRoute()
 const router = useRouter()
-const { portalApi, portalApiV2 } = usePortalApi()
+const { portalApiV2 } = usePortalApi()
 const serviceError = ref(null)
 const activeServiceVersionDeprecated = ref(false)
 const deselectOperation = ref<boolean>(false)
@@ -71,9 +74,14 @@ async function fetchServicePackage () {
   const id = servicePackageIdParam.value
 
   try {
-    const res = await portalApi.value.client.get(`/portal_api/service_packages/${id}`)
+    const { data: product } = await portalApiV2.value.service.productsApi.getProduct({ productId: id })
 
-    servicePackageStore.setServicePackage(res.data)
+    const productWithVersion = {
+      ...product,
+      versions: await fetchAll(meta => portalApiV2.value.service.versionsApi.getManyProductVersions({ ...meta, productId: id }))
+    }
+
+    servicePackageStore.setServicePackage(productWithVersion)
   } catch (err) {
     console.error(err)
     serviceError.value = getMessageFromError(err)
@@ -86,12 +94,8 @@ async function fetchDocumentTree () {
   try {
     const res = await portalApiV2.value.service.documentationApi.getProductDocuments(
       {
-        productId: id
-      },
-      {
-        headers: {
-          accept: 'application/konnect.document-tree+json'
-        }
+        productId: id,
+        accept: DocumentContentTypeEnum.KonnectDocumentTreejson
       })
 
     servicePackageStore.setDocumentTree(res.data.data)

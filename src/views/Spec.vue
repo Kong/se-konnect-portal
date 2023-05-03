@@ -98,7 +98,6 @@ export default defineComponent({
     const loading = ref(false)
     const spec = ref(null)
     const currentVersion = ref(null)
-    const applicationRegistration = ref(null)
     const hasServiceError = ref(null)
     const viewSpecModalIsVisible = ref(false)
     const viewSpecRegistrationModalIsVisible = ref(false)
@@ -114,7 +113,7 @@ export default defineComponent({
     const { isPublic } = storeToRefs(appStore)
 
     const applicationRegistrationEnabled = computed(() => {
-      return !!applicationRegistration.value && isAllowedToRegister.value
+      return currentVersion.value.registration_configs.length && isAllowedToRegister.value
     })
 
     const helpText = useI18nStore().state.helpText
@@ -130,7 +129,7 @@ export default defineComponent({
 
     const $router = useRouter()
     const $route = useRoute()
-    const { portalApi, portalApiV2 } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
     watch(() => props.service, async () => {
       isAllowedToRegister.value = await canUserAccess({
@@ -268,7 +267,6 @@ export default defineComponent({
       }
     }
 
-    // TODO(TDX-2419): Unnecessary after API Documentation is GA
     async function processService () {
       if (!props.service) {
         return
@@ -281,34 +279,10 @@ export default defineComponent({
         )
         .forEach(version => {
           serviceVersions.value.set(version.id, {
-            id: version.id,
-            version: version.version,
-            deprecated: version.deprecated,
+            ...version,
             dropdownLabel: `${version.version}${version.deprecated ? ' (Deprecated)' : ''}`
           })
         })
-
-      if (props.service?.documents?.[0]) {
-        const { toc, markdown } = formatMarkdown(props.service.documents[0].content)
-
-        serviceDoc.value = markdown
-        serviceToc.value = toc
-      }
-    }
-
-    async function fetchApplicationRegistration (spec) {
-      if (isPublic.value) {
-        return
-      }
-
-      try {
-        const res = await portalApi.value.client.get(`/portal_api/application_registrations/service_versions/${spec.id}`)
-
-        applicationRegistration.value = res?.data
-      } catch (e) {
-        applicationRegistration.value = null
-        console.error(e)
-      }
     }
 
     async function fetchSpec (version) {
@@ -412,7 +386,6 @@ export default defineComponent({
 
       if (currentServiceVersion) {
         currentVersion.value = currentServiceVersion
-        await fetchApplicationRegistration(currentServiceVersion)
       }
 
       // if we have a service version, fetch the spec

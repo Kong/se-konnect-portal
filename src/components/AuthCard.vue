@@ -29,9 +29,9 @@ import usePortalApi from '@/hooks/usePortalApi'
 export default {
   name: 'AuthCard',
   setup () {
-    const { portalApi } = usePortalApi()
+    const { portalApiV2 } = usePortalApi()
 
-    const logoSrc = portalApi.value.getApiLink('/api/v2/portal/logo')
+    const logoSrc = portalApiV2.value.getApiLink('/api/v2/portal/logo')
 
     return {
       logoSrc
