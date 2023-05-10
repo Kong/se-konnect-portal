@@ -64,6 +64,7 @@ async function init () {
       portalApiV2.value.updateClientWithCredentials()
     }
 
+
     const { setPortalData, setSession } = useAppStore()
 
     const authClientConfig = { basicAuthEnabled, oidcAuthEnabled }
