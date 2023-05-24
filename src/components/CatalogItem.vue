@@ -58,18 +58,35 @@
               <KSkeletonBox width="50" />
             </template>
             <template v-else>
-              <router-link
-                :to="{ name: 'spec', params: { service_package: service.id } }"
-                class="link"
-              >
-                Specification
-                <KIcon
-                  icon="arrowRight"
-                  size="16"
-                  color="var(--text_colors-link)"
-                  class="link-icon"
-                />
-              </router-link>
+              <template v-if="!isWsdl">
+                <router-link
+                  :to="{ name: 'spec', params: { service_package: service.id } }"
+                  class="link"
+                >
+                  Specification
+                  <KIcon
+                    icon="arrowRight"
+                    size="16"
+                    color="var(--text_colors-link)"
+                    class="link-icon"
+                  />
+                </router-link>
+              </template>
+              <template v-else>
+                <router-link
+                  :to="{ name: 'wsdl', params: { service_package: service.id } }"
+                  class="link"
+                >
+                  Specification
+                  <KIcon
+                    icon="arrowRight"
+                    size="16"
+                    color="var(--text_colors-link)"
+                    class="link-icon"
+                  />
+                </router-link>
+              </template>
+
             </template>
           </div>
           <div
@@ -112,7 +129,7 @@ export default {
     loading: {
       type: Boolean,
       default: false
-    }
+    },
   },
   data () {
     return {}
@@ -123,6 +140,9 @@ export default {
     },
     versionLabel () {
       return this.service.versions.length === 1 ? 'Version: ' : 'Versions: '
+    },
+    isWsdl () {
+      return this.service.id.startsWith("wsdl-")
     }
   }
 }

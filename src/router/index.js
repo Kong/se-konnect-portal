@@ -75,6 +75,19 @@ const routes = [
         component: ServiceShell,
         children: [
           {
+            path: '/wsdl/:service_package/:service_version?',
+            name: 'wsdl',
+            meta: {
+              title: 'WSDL',
+              isAuthorized: (route, { portalId }) => canUserAccess({
+                service: 'konnect',
+                action: '#view',
+                resourcePath: `portals/${portalId}/services/${route.params.service_package}`
+              })
+            },
+            component: () => import('../views/WsdlSpec.vue')
+          },
+          {
             path: '/spec/:service_package/:service_version?',
             name: 'spec',
             meta: {

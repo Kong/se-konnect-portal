@@ -36,6 +36,7 @@
     "vite-plugin-html": "^3.2.0",
     "vue": "^3.2.47",
     "vue-router": "^4.1.6",
+    "xsltproc": "^0.0.4",
     "xstate": "4.37.0"
   },
   "devDependencies": {

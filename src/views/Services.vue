@@ -146,6 +146,17 @@ export default defineComponent({
               hasDocumentation: source.has_documentation
             }
           })
+
+          // add xml document
+          var soapService = {
+              id: "wsdl-123",
+              title: "My WSDL",
+              versions: [],
+              description: "foobar goes here",
+              hasDocumentation: false
+          }
+          services.value.push(soapService)
+
           totalCount.value = meta.page.total
         } catch (e) {
           console.error('failed to find Service Packages', e)
