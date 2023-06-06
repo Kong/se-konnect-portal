@@ -1,5 +1,5 @@
 <template>
-  <Section >
+  <Section>
     <KSkeleton v-if="isLoading" />
     <SpecOperationsList
       v-else-if="operations"
@@ -20,9 +20,9 @@ import { portalApiV2 } from '@/services'
 import { useRoute, useRouter } from 'vue-router'
 import { CustomOperation, useProductStore } from '@/stores'
 import '@kong-ui-public/spec-renderer/dist/style.css'
-import yaml from 'js-yaml';
+import yaml from 'js-yaml'
 
-const ADMIN_API = import.meta.env.VITE_EE_API_URL;
+const ADMIN_API = import.meta.env.VITE_EE_API_URL
 
 const operations = ref<CustomOperation[]>(null)
 const isLoading = ref(true)
@@ -68,33 +68,36 @@ async function fetchOperations () {
     //   operationId: operation.operation_id
     // }))
     const requestOptions = {
-          method: "GET",
-          headers: {
-            "kong-admin-token": "kong_admin"
-          }
-        };
+      method: 'GET',
+      headers: {
+        'kong-admin-token': 'kong_admin'
+      }
+    }
 
-    const response = await fetch(`${ADMIN_API}/files/${servicePackage}`, requestOptions);
+    const response = await fetch(`${ADMIN_API}/files/${servicePackage}`, requestOptions)
     const oas = await response.json()
       .then(async res => {
-        let rawContent = res.contents;
+        const rawContent = res.contents
         let parsedObject
-        if (res.path.indexOf("json") !== -1) {
+        if (res.path.indexOf('json') !== -1) {
           parsedObject = JSON.parse(rawContent)
         }
-        if (res.path.indexOf("yaml") !== -1 || res.path.indexOf("yml") !== -1) {
+
+        if (res.path.indexOf('yaml') !== -1 || res.path.indexOf('yml') !== -1) {
           parsedObject = yaml.load(rawContent)
         }
+
         return parsedObject
       })
     const parsedOperations = parseOpenAPIOperations(oas)
+
     operations.value = parsedOperations?.map(operation => ({
       ...operation,
       operationId: operation.operationId
     }))
 
-    console.log("ops", operations)
-    
+    console.log('ops', operations)
+
     productStore.setSidebarOperations(operations.value)
   } catch (err) {
     console.error(err)
@@ -107,21 +110,21 @@ fetchOperations()
 
 watch([() => props.service, () => props.activeProductVersionId], fetchOperations)
 
-function parseOpenAPIOperations(openAPI) {
-  const operations = [];
+function parseOpenAPIOperations (openAPI) {
+  const operations = []
 
   // Loop through the paths in the OpenAPI specification
   for (const path in openAPI.paths) {
-    const pathObj = openAPI.paths[path];
+    const pathObj = openAPI.paths[path]
 
     // Loop through the HTTP methods in each path
     for (const method in pathObj) {
-      const operation = pathObj[method];
+      const operation = pathObj[method]
 
       // Extract the desired properties from the operation
-      const operationId = operation.operationId;
-      const summary = operation.summary;
-      const tags = operation.tags;
+      const operationId = operation.operationId
+      const summary = operation.summary
+      const tags = operation.tags
 
       // Create an object with the extracted properties
       const operationObj = {
@@ -131,14 +134,14 @@ function parseOpenAPIOperations(openAPI) {
         path: path,
         tags: tags,
         deprecated: false
-      };
+      }
 
       // Add the operation object to the result
-      operations.push(operationObj);
+      operations.push(operationObj)
     }
   }
 
-  return operations;
+  return operations
 }
 
 </script>

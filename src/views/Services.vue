@@ -58,7 +58,7 @@ import usePortalApi from '@/hooks/usePortalApi'
 import Catalog from '@/components/Catalog.vue'
 import { debounce } from '@/helpers/debounce'
 import { useI18nStore, CatalogItemModel } from '@/stores'
-import yaml from 'js-yaml';
+import yaml from 'js-yaml'
 
 const ADMIN_API = import.meta.env.VITE_EE_API_URL
 
@@ -157,19 +157,21 @@ export default defineComponent({
 
       try {
         const requestOptions = {
-          method: "GET",
+          method: 'GET',
           headers: {
-            "kong-admin-token": "kong_admin"
+            'kong-admin-token': 'kong_admin'
           }
-        };
+        }
 
         try {
-          const response = await fetch(`${ADMIN_API}/files?type=spec`, requestOptions);
-          const responseData = await response.json();
+          const response = await fetch(`${ADMIN_API}/files?type=spec`, requestOptions)
+          const responseData = await response.json()
+
           responseData.data.forEach((spec) => {
-            if (spec.path.indexOf("json") !== -1) {
+            if (spec.path.indexOf('json') !== -1) {
               console.log('parsing json')
               const parsed = JSON.parse(spec.contents)
+
               services.value.push({
                 id: spec.id,
                 title: parsed.info.title,
@@ -179,9 +181,11 @@ export default defineComponent({
                 versionCount: 1
               })
             }
-            if (spec.path.indexOf("yaml") !== -1 || spec.path.indexOf("yml") !== -1) {
+
+            if (spec.path.indexOf('yaml') !== -1 || spec.path.indexOf('yml') !== -1) {
               console.log('parsing yaml')
-              const parsed = yaml.load(spec.contents);
+              const parsed = yaml.load(spec.contents)
+
               services.value.push({
                 id: spec.id,
                 title: parsed.info.title,
@@ -193,11 +197,11 @@ export default defineComponent({
             }
           })
         } catch (error) {
-          console.error('Error making request:', error);
-          throw error;
+          console.error('Error making request:', error)
+          throw error
         }
       } finally {
-        loading.value = null;
+        loading.value = null
       }
     }
 

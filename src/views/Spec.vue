@@ -79,9 +79,9 @@ import { OperationListItem, SpecDetails } from '@kong-ui-public/spec-renderer'
 import { idFromPathMethod } from '@/helpers/generatedOperationId'
 import '@kong-ui-public/spec-renderer/dist/style.css'
 import { ProductVersionSpec } from '@kong/sdk-portal-js'
-import yaml from 'js-yaml';
+import yaml from 'js-yaml'
 
-const ADMIN_API = import.meta.env.VITE_EE_API_URL;
+const ADMIN_API = import.meta.env.VITE_EE_API_URL
 
 export default defineComponent({
   name: 'Spec',
@@ -209,7 +209,7 @@ export default defineComponent({
       //   action: '#consume',
       //   resourcePath: `services/${$route.params.service_package}`
       // })
-      console.log("mounted")
+      console.log('mounted')
       // await processService()
       await loadSwagger()
 
@@ -323,14 +323,15 @@ export default defineComponent({
 
     async function fetchSpec (version: string) {
       loading.value = true
-      console.log("v",version)
+      console.log('v', version)
       const requestOptions = {
-          method: "GET",
-          headers: {
-            "kong-admin-token": "kong_admin"
-          }
-        };
-      const response = await fetch(`${ADMIN_API}/files/${version}`, requestOptions);
+        method: 'GET',
+        headers: {
+          'kong-admin-token': 'kong_admin'
+        }
+      }
+      const response = await fetch(`${ADMIN_API}/files/${version}`, requestOptions)
+
       return await response.json()
         .then(async res => {
           // no content
@@ -339,15 +340,16 @@ export default defineComponent({
 
           //   return res
           // }
-          let rawContent = res.contents;
+          const rawContent = res.contents
           // if (res.path.indexOf("json") != -1) {
           //   rawContent = JSON.parse(res.contents)
           // }
           let parsedObject
-          if (res.path.indexOf("json") !== -1) {
+          if (res.path.indexOf('json') !== -1) {
             parsedObject = JSON.parse(rawContent)
           }
-          if (res.path.indexOf("yaml") !== -1 || res.path.indexOf("yml") !== -1) {
+
+          if (res.path.indexOf('yaml') !== -1 || res.path.indexOf('yml') !== -1) {
             parsedObject = yaml.load(rawContent)
           }
           // const parseErrors = []
@@ -368,8 +370,8 @@ export default defineComponent({
 
           //   return res
           // }
-          res['data'] = parsedObject
-          res['status'] = 200
+          res.data = parsedObject
+          res.status = 200
           console.log('parsed res', res)
 
           return res
@@ -386,7 +388,7 @@ export default defineComponent({
       // if (!props.service) {
       //   return
       // }
-      console.log("loading swagger")
+      console.log('loading swagger')
       // const serviceVersion = $route.params.service_version
       const servicePackage = $route.params.service_package.toString()
 
