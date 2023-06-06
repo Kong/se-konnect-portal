@@ -1,7 +1,7 @@
 <template>
   <aside>
     <div class="px-5 py-6 content">
-      <header class="mb-6">
+      <!-- <header class="mb-6">
         <span class="title mb-5">
           {{ servicePackage?.name }}
         </span>
@@ -18,8 +18,8 @@
             <div>{{ helpText.noResults }}</div>
           </template>
         </KSelect>
-      </header>
-      <SectionOverview :service="servicePackage" />
+      </header> -->
+      <!-- <SectionOverview :service="servicePackage" /> -->
       <SectionReference
         :active-product-version-id="activeProductVersionId"
         :service="servicePackage"

@@ -191,8 +191,8 @@ function onOperationSelectedSidebar (operation: Operation) {
 
 onMounted(async () => {
   setActiveDocumentSlug()
-  await fetchServicePackage()
-  await fetchDocumentTree()
+  // await fetchServicePackage()
+  // await fetchDocumentTree()
   initActiveProductVersionId()
 })
 

@@ -58,6 +58,9 @@ import usePortalApi from '@/hooks/usePortalApi'
 import Catalog from '@/components/Catalog.vue'
 import { debounce } from '@/helpers/debounce'
 import { useI18nStore, CatalogItemModel } from '@/stores'
+import yaml from 'js-yaml';
+
+const ADMIN_API = import.meta.env.VITE_EE_API_URL
 
 export default defineComponent({
   name: 'Services',
@@ -123,33 +126,78 @@ export default defineComponent({
     const fetchServices = async () => {
       loading.value = true
 
-      try {
-        try {
-          const { data: portalEntities } = await portalApiV2.value.service.searchApi.searchPortalEntities({
-            indices: 'product-catalog',
-            q: searchString.value,
-            pageNumber: catalogPageNumber.value,
-            pageSize: cardsPerPage.value,
-            join: 'versions'
-          })
-          const { data: sources, meta } = portalEntities
+      // try {
+      //   try {
+      //     const { data: portalEntities } = await portalApiV2.value.service.searchApi.searchPortalEntities({
+      //       indices: 'product-catalog',
+      //       q: searchString.value,
+      //       pageNumber: catalogPageNumber.value,
+      //       pageSize: cardsPerPage.value,
+      //       join: 'versions'
+      //     })
+      //     const { data: sources, meta } = portalEntities
 
-          services.value = sources.map(({ source }) => {
-            return {
-              id: source.id,
-              title: source.name,
-              latestVersion: source.latest_version,
-              description: source.description,
-              documentCount: source.document_count,
-              versionCount: source.version_count
+      //     services.value = sources.map(({ source }) => {
+      //       return {
+      //         id: source.id,
+      //         title: source.name,
+      //         latestVersion: source.latest_version,
+      //         description: source.description,
+      //         documentCount: source.document_count,
+      //         versionCount: source.version_count
+      //       }
+      //     })
+      //     totalCount.value = meta.page.total
+      //   } catch (e) {
+      //     console.error('failed to find Service Packages', e)
+      //   }
+      // } finally {
+      //   loading.value = null
+      // }
+
+      try {
+        const requestOptions = {
+          method: "GET",
+          headers: {
+            "kong-admin-token": "kong_admin"
+          }
+        };
+
+        try {
+          const response = await fetch(`${ADMIN_API}/files?type=spec`, requestOptions);
+          const responseData = await response.json();
+          responseData.data.forEach((spec) => {
+            if (spec.path.indexOf("json") !== -1) {
+              console.log('parsing json')
+              const parsed = JSON.parse(spec.contents)
+              services.value.push({
+                id: spec.id,
+                title: parsed.info.title,
+                latestVersion: parsed.info.version,
+                description: parsed.info.description,
+                documentCount: 1,
+                versionCount: 1
+              })
+            }
+            if (spec.path.indexOf("yaml") !== -1 || spec.path.indexOf("yml") !== -1) {
+              console.log('parsing yaml')
+              const parsed = yaml.load(spec.contents);
+              services.value.push({
+                id: spec.id,
+                title: parsed.info.title,
+                latestVersion: parsed.info.version,
+                description: parsed.info.description,
+                documentCount: 1,
+                versionCount: 1
+              })
             }
           })
-          totalCount.value = meta.page.total
-        } catch (e) {
-          console.error('failed to find Service Packages', e)
+        } catch (error) {
+          console.error('Error making request:', error);
+          throw error;
         }
       } finally {
-        loading.value = null
+        loading.value = null;
       }
     }
 

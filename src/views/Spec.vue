@@ -79,6 +79,9 @@ import { OperationListItem, SpecDetails } from '@kong-ui-public/spec-renderer'
 import { idFromPathMethod } from '@/helpers/generatedOperationId'
 import '@kong-ui-public/spec-renderer/dist/style.css'
 import { ProductVersionSpec } from '@kong/sdk-portal-js'
+import yaml from 'js-yaml';
+
+const ADMIN_API = import.meta.env.VITE_EE_API_URL;
 
 export default defineComponent({
   name: 'Spec',
@@ -113,10 +116,10 @@ export default defineComponent({
       (x: string) => JSON.parse(x),
       (x: string) => jsyaml.load(x)
     ]
-
-    const applicationRegistrationEnabled = computed(() => {
-      return currentVersion.value.registration_configs?.length && isAllowedToRegister.value
-    })
+    const applicationRegistrationEnabled = false
+    // const applicationRegistrationEnabled = computed(() => {
+    //   return currentVersion.value.registration_configs?.length && isAllowedToRegister.value
+    // })
 
     const helpText = useI18nStore().state.helpText
 
@@ -168,7 +171,7 @@ export default defineComponent({
         resourcePath: `services/${$route.params.service_package}`
       })
 
-      await processService()
+      // await processService()
       await loadSwagger().then(() => {
         if (sidebarOperations.value.length) {
           // this means that user initially routed to a spec - check if
@@ -201,19 +204,19 @@ export default defineComponent({
     })
 
     onMounted(async () => {
-      isAllowedToRegister.value = await canUserAccess({
-        service: 'konnect',
-        action: '#consume',
-        resourcePath: `services/${$route.params.service_package}`
-      })
-
-      await processService()
+      // isAllowedToRegister.value = await canUserAccess({
+      //   service: 'konnect',
+      //   action: '#consume',
+      //   resourcePath: `services/${$route.params.service_package}`
+      // })
+      console.log("mounted")
+      // await processService()
       await loadSwagger()
 
       // trigger registration modal if an application param is passed
-      if ($route.query.application) {
-        viewSpecRegistrationModalIsVisible.value = true
-      }
+      // if ($route.query.application) {
+      //   viewSpecRegistrationModalIsVisible.value = true
+      // }
     })
 
     function triggerViewSpecModal () {
@@ -320,42 +323,54 @@ export default defineComponent({
 
     async function fetchSpec (version: string) {
       loading.value = true
-
-      return await portalApiV2.value.service.versionsApi.getProductVersionSpec({
-        productId: $route.params.service_package as string,
-        versionId: version
-      })
+      console.log("v",version)
+      const requestOptions = {
+          method: "GET",
+          headers: {
+            "kong-admin-token": "kong_admin"
+          }
+        };
+      const response = await fetch(`${ADMIN_API}/files/${version}`, requestOptions);
+      return await response.json()
         .then(async res => {
           // no content
-          if (res.status === 204) {
-            res.data = {} as ProductVersionSpec
+          // if (res.status === 204) {
+          //   res.data = {} as ProductVersionSpec
 
-            return res
+          //   return res
+          // }
+          let rawContent = res.contents;
+          // if (res.path.indexOf("json") != -1) {
+          //   rawContent = JSON.parse(res.contents)
+          // }
+          let parsedObject
+          if (res.path.indexOf("json") !== -1) {
+            parsedObject = JSON.parse(rawContent)
           }
-
-          const rawContent = res.data.content
-
-          let parsedObject: any
-          const parseErrors = []
-
-          for (const parser of objectParsers) {
-            try {
-              parsedObject = parser(rawContent)
-              if (parsedObject) {
-                break
-              }
-            } catch (err) {
-              parseErrors.push(err)
-            }
+          if (res.path.indexOf("yaml") !== -1 || res.path.indexOf("yml") !== -1) {
+            parsedObject = yaml.load(rawContent)
           }
+          // const parseErrors = []
 
-          if (!parsedObject) {
-            console.error(['Failed to parse spec', ...parseErrors].join(', '))
+          // for (const parser of objectParsers) {
+          //   try {
+          //     parsedObject = parser(rawContent)
+          //     if (parsedObject) {
+          //       break
+          //     }
+          //   } catch (err) {
+          //     parseErrors.push(err)
+          //   }
+          // }
 
-            return res
-          }
+          // if (!parsedObject) {
+          //   console.error(['Failed to parse spec', ...parseErrors].join(', '))
 
-          res.data = parsedObject
+          //   return res
+          // }
+          res['data'] = parsedObject
+          res['status'] = 200
+          console.log('parsed res', res)
 
           return res
         })
@@ -368,73 +383,81 @@ export default defineComponent({
     }
 
     async function loadSwagger () {
-      if (!props.service) {
-        return
-      }
+      // if (!props.service) {
+      //   return
+      // }
+      console.log("loading swagger")
+      // const serviceVersion = $route.params.service_version
+      const servicePackage = $route.params.service_package.toString()
 
-      const serviceVersion = $route.params.service_version
-      const servicePackage = $route.params.service_package
+      // let serviceVersionId
 
-      let serviceVersionId
+      // if (serviceVersion) {
+      //   try {
+      //     serviceVersionId = decodeURIComponent(serviceVersion as string)
+      //   } catch (e) {
+      //     serviceVersionId = serviceVersion
+      //   }
+      // }
 
-      if (serviceVersion) {
-        try {
-          serviceVersionId = decodeURIComponent(serviceVersion as string)
-        } catch (e) {
-          serviceVersionId = serviceVersion
-        }
-      }
+      // if (!serviceVersionId && serviceVersions.value.size > 0) {
+      //   // Redirect when missing service version id
+      //   // to first available service version of service package
+      //   const id = Array.from(serviceVersions.value).pop()[0]
 
-      if (!serviceVersionId && serviceVersions.value.size > 0) {
-        // Redirect when missing service version id
-        // to first available service version of service package
-        const id = Array.from(serviceVersions.value).pop()[0]
+      //   $router.replace({
+      //     name: 'spec',
+      //     params: {
+      //       service_version: encodeURIComponent(id),
+      //       service_package: servicePackage
+      //     }
+      //   })
 
-        $router.replace({
-          name: 'spec',
-          params: {
-            service_version: encodeURIComponent(id),
-            service_package: servicePackage
-          }
-        })
+      //   return // return because the route change will trigger load swagger again
+      // }
 
-        return // return because the route change will trigger load swagger again
-      }
+      // const currentServiceVersion = serviceVersions.value.get(serviceVersionId)
 
-      const currentServiceVersion = serviceVersions.value.get(serviceVersionId)
+      // if (!currentServiceVersion && serviceVersions.value.size > 0) {
+      //   // Fallback to previous implementation when we had serviceVersion name in url
+      //   // instead of serviceVersion id. In that case variable serviceVersionId is serviceVersion name
+      //   // Also it handles a situation when non-exisitng id/name will be provided
 
-      if (!currentServiceVersion && serviceVersions.value.size > 0) {
-        // Fallback to previous implementation when we had serviceVersion name in url
-        // instead of serviceVersion id. In that case variable serviceVersionId is serviceVersion name
-        // Also it handles a situation when non-exisitng id/name will be provided
+      //   const serviceVersion = Array.from(serviceVersions.value.values()).find((serviceVersion) => {
+      //     return serviceVersion.name === serviceVersionId
+      //   })
 
-        const serviceVersion = Array.from(serviceVersions.value.values()).find((serviceVersion) => {
-          return serviceVersion.name === serviceVersionId
-        })
+      //   $router.replace({
+      //     name: 'spec',
+      //     params: {
+      //       service_version: serviceVersion?.id && encodeURIComponent(serviceVersion?.id),
+      //       service_package: servicePackage
+      //     }
+      //   })
 
-        $router.replace({
-          name: 'spec',
-          params: {
-            service_version: serviceVersion?.id && encodeURIComponent(serviceVersion?.id),
-            service_package: servicePackage
-          }
-        })
+      //   return // return because the route change will trigger load swagger again
+      // }
 
-        return // return because the route change will trigger load swagger again
-      }
+      // setTitle(currentServiceVersion?.name)
 
-      setTitle(currentServiceVersion?.name)
-
-      if (currentServiceVersion) {
-        currentVersion.value = currentServiceVersion
-      }
+      // if (currentServiceVersion) {
+      //   currentVersion.value = currentServiceVersion
+      // }
 
       // if we have a service version, fetch the spec
-      if (currentServiceVersion?.id && $route.params.service_package) {
+      if (servicePackage) {
         try {
-          const specResponse = await fetchSpec(serviceVersionId)
+          const specResponse = await fetchSpec(servicePackage)
 
           spec.value = specResponse.data
+
+          currentVersion.value = {
+            name: specResponse.data.info.title,
+            version: specResponse.data.info.version,
+            description: specResponse.data.info.description
+          }
+
+          console.log('current version', currentVersion)
 
           // detect 404 for usage in swagger-ui-kong-theme-universal
           if (specResponse.status === 404 || specResponse.status === 204) {
