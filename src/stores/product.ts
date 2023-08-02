@@ -4,7 +4,8 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
 export interface ProductWithVersions extends Product {
-  versions: ProductVersion[]
+  versions: ProductVersion[],
+  graphqlMode?: boolean
 }
 export interface CatalogItemModel {
   id: string;

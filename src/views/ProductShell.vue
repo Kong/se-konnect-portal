@@ -6,6 +6,9 @@
       class="mt-6"
       :message="productError"
     />
+    <template v-else-if="product && product.graphqlMode">
+      <GraphiQLWithDocs endpoint="https://countries.trevorblades.com/graphql" />
+    </template>
     <template v-else>
       <div
         class="sidebar-wrapper"
@@ -47,6 +50,7 @@ import { AxiosResponse } from 'axios'
 import { sortByDate } from '@/helpers/sortBy'
 import useLDFeatureFlag from '@/hooks/useLDFeatureFlag'
 import { FeatureFlags } from '@/constants/feature-flags'
+import GraphiQLWithDocs from '@/components/GraphQL.vue'
 
 const { notify } = useToaster()
 const helpText = useI18nStore().state.helpText
@@ -66,6 +70,21 @@ const { product, documentTree, activeDocumentSlug, activeProductVersionId } = st
 
 const productIdParam = computed(() => route.params.product as string)
 const productVersionParam = computed(() => route.params.product_version as string)
+// const graphqlMode = computed(async () => {
+//   if (route.params.product as string && route.params.product_version as string) {
+//     await portalApiV2.value.service.versionsApi.getProductVersionSpec({
+//         productId: route.params.product as string,
+//         versionId: route.params.product_version as string
+//       }).then((res) => {
+//         console.log("fetch spec res")
+//       }).catch((e) =>{
+//         return false
+//       })
+//   } else {
+//     return false
+//   }
+  
+// })
 
 function setActiveDocumentSlug () {
   const slugs = route.params.slug
@@ -85,9 +104,11 @@ async function fetchProduct () {
 
   try {
     const { data: product } = await productsApi.getProduct({ productId: id })
-
+    const graphqlMode = product.description.toLowerCase().indexOf("graphql") !== -1 ? true : false;
+    console.log("graphqlMode", graphqlMode)
     const productWithVersion: ProductWithVersions = {
       ...product,
+      graphqlMode: graphqlMode,
       versions: await fetchAll(meta => versionsApi.listProductVersions({ ...meta, productId: id }))
     }
 

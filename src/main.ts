@@ -29,6 +29,11 @@ import '@kong-ui-public/copy-uuid/dist/style.css'
 import useToaster from './composables/useToaster'
 import usePortalApi from './hooks/usePortalApi'
 
+import "https://unpkg.com/react@18/umd/react.development.js"
+import "https://unpkg.com/react-dom@18/umd/react-dom.development.js"
+import "https://unpkg.com/graphiql/graphiql.min.js"
+
+
 /**
  * Initialize application
  */

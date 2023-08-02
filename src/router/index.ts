@@ -24,6 +24,7 @@ const Registration = () => import('../views/Registration.vue')
 const ForgotPassword = () => import('../views/ForgotPassword.vue')
 const ResetPassword = () => import('../views/ResetPassword.vue')
 const Login = () => import('../views/Login.vue')
+const Graph = () => import('../views/Graph.vue')
 
 export const portalRouter = () => {
   const appStore = useAppStore()
@@ -182,6 +183,14 @@ export const portalRouter = () => {
             component: () => {
               window.location.href = '/404'
             }
+          },
+          {
+            path: '/graphiql',
+            name: 'graph-docs',
+            meta: {
+              name: "Graph Docs"
+            },
+            component: () => import('../views/Graph.vue')
           }
         ]
       }

@@ -1,0 +1,4 @@
+{
+    "graphql": true,
+    "schema": "https://countries.trevorblades.com/graphql"
+}
