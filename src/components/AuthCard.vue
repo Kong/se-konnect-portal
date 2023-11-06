@@ -26,6 +26,7 @@
 import { defineComponent } from 'vue'
 import usePortalApi from '@/hooks/usePortalApi'
 import { useAppStore, useI18nStore } from '@/stores'
+import logo from '../assets/logo.png'
 
 export default defineComponent({
   name: 'AuthCard',
@@ -33,7 +34,9 @@ export default defineComponent({
     const { portalApiV2 } = usePortalApi()
     const { isPublic } = useAppStore()
     const helpText = useI18nStore().state.helpText.authCard
-    const logoSrc: string = portalApiV2.value.getApiLink('/api/v2/portal/logo')
+    // const logoSrc: string = portalApiV2.value.getApiLink('/api/v2/portal/logo')
+    const logoSrc = logo
+
 
     return {
       helpText,

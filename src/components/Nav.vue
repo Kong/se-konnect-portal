@@ -37,6 +37,7 @@ import { mapState, storeToRefs } from 'pinia'
 import { useI18nStore, useAppStore } from '@/stores'
 import UserDropdown from './UserDropdown.vue'
 import usePortalApi from '@/hooks/usePortalApi'
+import logo from '../assets/logo.png'
 
 export default defineComponent({
   name: 'Nav',
@@ -54,7 +55,8 @@ export default defineComponent({
       window.location.href = logoutUrl
     }
     const { portalApiV2 } = usePortalApi()
-    const logoSrc = portalApiV2.value.getApiLink('/api/v2/portal/logo')
+    // const logoSrc = portalApiV2.value.getApiLink('/api/v2/portal/logo')
+    const logoSrc = logo
 
     return {
       logout,

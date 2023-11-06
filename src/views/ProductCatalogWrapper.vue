@@ -1,54 +1,29 @@
 <template>
   <div class="dev-portal-products">
-    <div
-      class="products-top-section flex flex-col items-center justify-center py-16 bg-section_colors-hero"
-      :style="catalog_cover_style"
-    >
-      <h4 class="products-welcome mb-4 font-normal color-text_colors-secondary text-2xl">
-        {{ welcome_message }}
-      </h4>
-      <h1 class="products-title mb-5 font-normal color-text_colors-hero text-4xl">
-        {{ primary_header }}
-      </h1>
-      <div class="w-full max-w-lg mx-auto inline-flex">
-        <form
-          id="searchProductsForm"
-          @submit.prevent="searchProducts"
-          @reset.prevent="searchProducts"
-        >
-          <KInput
-            v-model="searchString"
-            class="k-input--full"
-            size="small"
-            type="search"
-            :placeholder="helpText.search"
-            data-testid="catalog-search"
-            form="searchProductsForm"
-            @input="searchProducts"
-          />
-          <KButton
-            form="searchProductsForm"
-            appearance="primary"
-            data-testid="catalog-search-button"
-            type="submit"
-            size="small"
-            :disabled="loading"
-            :is-rounded="false"
-          >
-            {{ searchString !== '' && loading ? helpText.searching : helpText.search }}
-          </KButton>
-        </form>
+    <div class="products-top-section flex flex-col items-center justify-center py-16 bg-section_colors-hero"
+      :style="catalog_cover_style">
+      <div class="filter-layer">
+        <h4 class="products-welcome mb-4 font-normal color-text_colors-secondary text-2xl">
+          {{ welcome_message }}
+        </h4>
+        <h1 class="products-title mb-5 font-normal color-text_colors-hero text-4xl">
+          {{ primary_header }}
+        </h1>
+        <div class="w-full max-w-lg mx-auto inline-flex">
+          <form id="searchProductsForm" @submit.prevent="searchProducts" @reset.prevent="searchProducts">
+            <KInput v-model="searchString" class="k-input--full" size="small" type="search" :placeholder="helpText.search"
+              data-testid="catalog-search" form="searchProductsForm" @input="searchProducts" />
+            <KButton form="searchProductsForm" appearance="primary" data-testid="catalog-search-button" type="submit"
+              size="small" :disabled="loading" :is-rounded="false">
+              {{ searchString !== '' && loading ? helpText.searching : helpText.search }}
+            </KButton>
+          </form>
+        </div>
       </div>
     </div>
-    <Catalog
-      :catalog-items="catalogItems"
-      :cards-per-page="cardsPerPage"
-      :total-count="totalCount"
-      :search-triggered="searchTriggered"
-      :loading="loading"
-      @active-view-changed="catalogViewChanged"
-      @list-page-changed="catalogPageChanged"
-    />
+    <Catalog :catalog-items="catalogItems" :cards-per-page="cardsPerPage" :total-count="totalCount"
+      :search-triggered="searchTriggered" :loading="loading" @active-view-changed="catalogViewChanged"
+      @list-page-changed="catalogPageChanged" />
   </div>
 </template>
 
@@ -58,13 +33,14 @@ import usePortalApi from '@/hooks/usePortalApi'
 import Catalog from '@/components/Catalog.vue'
 import { debounce } from '@/helpers/debounce'
 import { useI18nStore, CatalogItemModel } from '@/stores'
+import bg from '../assets/home.png'
 
 export default defineComponent({
   name: 'ProductCatalogWrapper',
   components: { Catalog },
 
-  setup () {
-    const catalog_cover_style = ref<{backgroundImage:string}>({ backgroundImage: '' })
+  setup() {
+    const catalog_cover_style = ref<{ backgroundImage: string }>({ backgroundImage: '' })
     const welcome_message = ref('')
     const primary_header = ref('')
     const cardsPerPage = ref(12)
@@ -92,7 +68,8 @@ export default defineComponent({
         }
 
         if (portalVariables.cover) {
-          const imageUrl = portalApiV2.value.getApiLink('/api/v2/portal/catalog-cover')
+          // const imageUrl = portalApiV2.value.getApiLink('/api/v2/portal/catalog-cover')
+          const imageUrl = bg;
 
           catalog_cover_style.value.backgroundImage = `url(${imageUrl})`
         }
@@ -216,17 +193,44 @@ export default defineComponent({
     display: flex;
     width: 100%;
   }
+
   .products-top-section {
     border-bottom: 1px solid var(--section_colors-stroke);
+
+    .filter-layer {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 30px 50px;
+      text-align: center;
+
+      .products-welcome {
+        color: white !important;
+      }
+      .products-title {
+        color: white !important;
+      }
+    }
 
     .k-input {
       fill: var(--text_colors-accent);
       border-radius: 3px 0 0 3px !important;
-      &::-webkit-input-placeholder { color:var(--text_colors-secondary) !important; }
-      &::-moz-placeholder { color:var(--text_colors-secondary) !important; }
-      &::-ms-placeholder { color:var(--text_colors-secondary) !important; }
-      &::placeholder { color:var(--text_colors-secondary) !important; }
+
+      &::-webkit-input-placeholder {
+        color: var(--text_colors-secondary) !important;
+      }
+
+      &::-moz-placeholder {
+        color: var(--text_colors-secondary) !important;
+      }
+
+      &::-ms-placeholder {
+        color: var(--text_colors-secondary) !important;
+      }
+
+      &::placeholder {
+        color: var(--text_colors-secondary) !important;
+      }
     }
+
     .k-button {
       border-radius: 0 3px 3px 0;
       font-weight: normal !important;
