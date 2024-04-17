@@ -49,6 +49,7 @@
       @active-view-changed="catalogViewChanged"
       @list-page-changed="catalogPageChanged"
     />
+    <GraphCatalog />
   </div>
 </template>
 
@@ -56,12 +57,13 @@
 import { defineComponent, ref, onBeforeMount } from 'vue'
 import usePortalApi from '@/hooks/usePortalApi'
 import Catalog from '@/components/Catalog.vue'
+import GraphCatalog from '@/components/GraphQL/GraphCatalog.vue'
 import { debounce } from '@/helpers/debounce'
 import { useI18nStore, CatalogItemModel } from '@/stores'
 
 export default defineComponent({
   name: 'ProductCatalogWrapper',
-  components: { Catalog },
+  components: { Catalog, GraphCatalog },
 
   setup () {
     const catalog_cover_style = ref<{backgroundImage:string}>({ backgroundImage: '' })

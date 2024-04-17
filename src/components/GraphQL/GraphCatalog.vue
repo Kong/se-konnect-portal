@@ -1,15 +1,14 @@
 <template>
     <div class="products-content px-5">
       <div class="container max-w-screen-2xl mx-auto mt-6 mb-5 flex justify-between">
-        <span class="products-label">GraphQL APIs</span>
-        />
+        <span class="products-label">GraphQL</span>
       </div>
       <div
         class="list-wrapper"
       >
       <div class="container max-w-screen-2xl mx-auto catalog-card-view">
         <div class="w-full grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
-          <CatalogItem
+          <GraphCatalogItem
             v-for="(product, index) in catalogItems"
             :key="product.id + index"
             class="catalog-item"
@@ -31,8 +30,21 @@
   const catalogItemsDefault = [
     {
         "id": "starwars",
-        "name": "Star Wars API",
+        "title": "Star Wars API",
         "description": "This GraphQL API retrieves all the Star Wars data you've ever wanted: Planets, Spaceships, Vehicles, People, Films and Species from all seven Star Wars films.",
+        "created_at": "2022-06-06T18:53:29.157Z",
+        "updated_at": "2023-04-04T13:27:25.005Z",
+        "version_count": 1,
+        "document_count": 1,
+        "latest_version": {
+            "name": "1.0",
+            "id": "7d2fcdd8-3f0e-4d28-bfe8-dcc21c533782"
+        }
+    },
+    {
+        "id": "countries",
+        "title": "Countries API",
+        "description": "This is a public GraphQL API for information about countries, continents, and languages.",
         "created_at": "2022-06-06T18:53:29.157Z",
         "updated_at": "2023-04-04T13:27:25.005Z",
         "version_count": 1,
@@ -47,13 +59,12 @@
   export default defineComponent({
     name: 'Catalog',
     components: {
-      GraphCatalogItem,
-      EmptyState
+      GraphCatalogItem
     },
     props: {
       catalogItems: {
         type: Array as PropType<CatalogItemModel[]>,
-        default: () => []
+        default: catalogItemsDefault
       },
       cardsPerPage: {
         type: Number,
@@ -84,10 +95,9 @@
         noResultsMessage
       }
     },
-    data (): { activeView: 'grid' | 'table', catalogItems} {
+    data (): { activeView: 'grid' | 'table'} {
       return {
-        activeView: 'grid',
-        catalogItems: catalogItemsDefault
+        activeView: 'grid'
       }
     },
     computed: {

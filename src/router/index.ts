@@ -76,6 +76,14 @@ export const portalRouter = () => {
             component: ProductCatalogWrapper
           },
           {
+            path: '/graphql/:product',
+            name: 'graphql',
+            meta: {
+              title: helpText.specTitle
+            },
+            component: () => import('../views/GraphQL.vue')
+          },
+          {
             // Nest Service-related routes, so they can use a unified shell component
             // that provides the navigation sidebar and handles product data fetching.
             // All child routes have the current Service injected in the `product` prop.

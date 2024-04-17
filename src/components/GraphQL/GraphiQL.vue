@@ -1,5 +1,5 @@
 <template>
-    <GraphiQL :fetcher="fetcher" style="margin-top: 56px !important;">
+    <GraphiQL :fetcher="fetcher" :query="query" style="margin-top: 56px !important;">
       <div style="margin-top: 56px !important;">
         
       </div>
@@ -23,7 +23,8 @@
       }
     ,
     props: {
-      url: String
+      url: String,
+      query: String
     },
     setup(props) {
       return {
