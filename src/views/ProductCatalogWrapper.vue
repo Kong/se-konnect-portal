@@ -4,6 +4,7 @@
       class="products-top-section flex flex-col items-center justify-center py-16 bg-section_colors-hero"
       :style="catalog_cover_style"
     >
+      <div class="filter-layer">
       <h4 class="products-welcome mb-4 font-normal color-text_colors-secondary text-2xl">
         {{ welcome_message }}
       </h4>
@@ -39,6 +40,7 @@
           </KButton>
         </form>
       </div>
+      </div>
     </div>
     <Catalog
       :catalog-items="catalogItems"
@@ -58,6 +60,8 @@ import usePortalApi from '@/hooks/usePortalApi'
 import Catalog from '@/components/Catalog.vue'
 import { debounce } from '@/helpers/debounce'
 import { useI18nStore, CatalogItemModel } from '@/stores'
+
+import bg from '../assets/unitedbg2.jpeg'
 
 export default defineComponent({
   name: 'ProductCatalogWrapper',
@@ -92,9 +96,11 @@ export default defineComponent({
         }
 
         if (portalVariables.cover) {
-          const imageUrl = portalApiV2.value.getApiLink('/api/v2/portal/catalog-cover')
+          const imageUrl = bg
+          // const imageUrl = portalApiV2.value.getApiLink('/api/v2/portal/catalog-cover')
 
           catalog_cover_style.value.backgroundImage = `url(${imageUrl})`
+          
         }
       }).catch(e => { console.error('Failed to load appearance.', e) }).then(defaultHeaders)
     }
@@ -218,6 +224,22 @@ export default defineComponent({
   }
   .products-top-section {
     border-bottom: 1px solid var(--section_colors-stroke);
+    height: 60vh;
+    background-size: cover;
+    background-position: center;
+
+    .filter-layer {
+      background-color: rgba(0, 0, 0, 0.7);
+      padding: 30px 50px;
+      text-align: center;
+
+      .products-welcome {
+        color: white !important;
+      }
+      .products-title {
+        color: white !important;
+      }
+    }
 
     .k-input {
       fill: var(--text_colors-accent);

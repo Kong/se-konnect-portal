@@ -48,6 +48,8 @@ import { useI18nStore, useAppStore } from '@/stores'
 import NavDropdown from './NavDropdown.vue'
 import usePortalApi from '@/hooks/usePortalApi'
 
+import logo from './../assets/united_logo_h_rgb_r.avif'
+
 export default defineComponent({
   name: 'Nav',
   components: { NavDropdown },
@@ -64,7 +66,8 @@ export default defineComponent({
       window.location.href = logoutUrl
     }
     const { portalApiV2 } = usePortalApi()
-    const logoSrc = portalApiV2.value.getApiLink('/api/v2/portal/logo')
+    const logoSrc = logo
+    // const logoSrc = portalApiV2.value.getApiLink('/api/v2/portal/logo')
 
     return {
       logout,
