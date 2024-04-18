@@ -61,8 +61,6 @@ import GraphCatalog from '@/components/GraphQL/GraphCatalog.vue'
 import { debounce } from '@/helpers/debounce'
 import { useI18nStore, CatalogItemModel } from '@/stores'
 
-import bg from '../assets/blogbanner.jpg'
-
 export default defineComponent({
   name: 'ProductCatalogWrapper',
   components: { Catalog, GraphCatalog },
@@ -96,8 +94,7 @@ export default defineComponent({
         }
 
         if (portalVariables.cover) {
-          const imageUrl = bg
-          // const imageUrl = portalApiV2.value.getApiLink('/api/v2/portal/catalog-cover')
+          const imageUrl = portalApiV2.value.getApiLink('/api/v2/portal/catalog-cover')
 
           catalog_cover_style.value.backgroundImage = `url(${imageUrl})`
         }
@@ -223,15 +220,6 @@ export default defineComponent({
   }
   .products-top-section {
     border-bottom: 1px solid var(--section_colors-stroke);
-    height: 60vh;
-
-    .products-welcome {
-      color: white !important;
-    }
-
-    .products-title {
-      color: white !important;
-    }
 
     .k-input {
       fill: var(--text_colors-accent);
