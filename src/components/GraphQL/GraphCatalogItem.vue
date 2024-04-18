@@ -53,19 +53,13 @@
             </span>
           </li>
           <li class="docs-links">
-            <div
-              v-if="product.showSpecLink"
-              class="details-item"
-            >
-              <template v-if="loading">
-                <KSkeletonBox width="50" />
-              </template>
-              <template v-else>
+            <div>
+              <template>
                 <router-link
                   :to="{ name: 'graphql', params: { product: product.id } }"
                   class="link"
                 >
-                  {{ helpText.specificationLink }}
+                  Specification
                   <KIcon
                     icon="arrowRight"
                     size="16"
