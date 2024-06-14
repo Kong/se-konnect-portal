@@ -26,6 +26,8 @@
 import { defineComponent } from 'vue'
 import usePortalApi from '@/hooks/usePortalApi'
 import { useAppStore, useI18nStore } from '@/stores'
+import logo from '../assets/UA_logo_stack_rgb_r.png'
+import { log } from 'xstate/lib/actions'
 
 export default defineComponent({
   name: 'AuthCard',
@@ -33,8 +35,8 @@ export default defineComponent({
     const { portalApiV2 } = usePortalApi()
     const { isPublic } = useAppStore()
     const helpText = useI18nStore().state.helpText.authCard
-    const logoSrc: string = portalApiV2.value.getApiLink('/api/v2/portal/logo')
-
+    // const logoSrc: string = portalApiV2.value.getApiLink('/api/v2/portal/logo')
+    const logoSrc = logo
     return {
       helpText,
       logoSrc,
@@ -47,7 +49,7 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .logo {
-  max-height: 41px;
+  max-height: 100px;
 }
 
 .auth {
@@ -72,7 +74,7 @@ export default defineComponent({
       margin: calc(var(--KCardPaddingY) * -1) calc(var(--KCardPaddingY) * -1) 0;
       padding: 2rem;
       border-radius: 3px 3px 0 0;
-      background-color: var(--section_colors-hero);
+      background-color: #ffffff //var(--section_colors-hero);
     }
   }
 }

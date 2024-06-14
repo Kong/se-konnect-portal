@@ -16,6 +16,7 @@ import {
 } from '@/router/route-utils'
 
 const ProductCatalogWrapper = () => import('../views/ProductCatalogWrapper.vue')
+const Onboarding = () => import('../ual-views/Onboarding.vue')
 const ProductShell = () => import('../views/ProductShell.vue')
 const Shell = () => import('../views/Shell.vue')
 const Registration = () => import('../views/Registration.vue')
@@ -165,6 +166,14 @@ export const portalRouter = () => {
                 ]
               }
             ]
+          },
+          {
+            path: '',
+            name: 'onboarding',
+            meta: {
+              title: "Onboarding"
+            },
+            component: Onboarding
           },
           {
             path: '/404',

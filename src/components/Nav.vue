@@ -13,6 +13,14 @@
       </router-link>
       <nav class="flex items-center links">
         <router-link
+          data-testid="onboarding-link"
+          :to="{ name: 'onboarding' }"
+          class="mr-2 p-2 onboarding-link"
+        >
+          <div class="background-color-wrapper" />
+          Onboarding
+        </router-link>
+        <router-link
           data-testid="catalog-link"
           :to="{ name: 'catalog' }"
           class="mr-2 p-2 catalog-link"
