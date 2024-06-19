@@ -93,7 +93,7 @@
   </Content>
 </template>
 <script lang="ts">
-  import { defineComponent, computed, ref, onMounted } from 'vue'
+  import { defineComponent, ref, onMounted } from 'vue'
   import PageTitle from '@/components/PageTitle.vue'
   import { useRouter } from 'vue-router'
   import { useMachine } from '@xstate/vue'
@@ -142,7 +142,7 @@
         })
       )
 
-      const modalTitle = computed(() => `Create Application`)
+      const modalTitle = `Create OAM Application`
 
       onMounted(async() => {
 
