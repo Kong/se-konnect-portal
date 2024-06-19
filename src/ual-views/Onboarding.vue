@@ -68,9 +68,9 @@
       </template>
       <template #footer-content>
           <KButton
-          :is-rounded="false"
-          appearance="danger"
-          data-testid="application-delete-confirm-button"
+          :is-rounded="true"
+          appearance="creation"
+          data-testid="application-create-confirm-button"
           class="mr-3"
           @click="handleConfirmCreate"
         >
@@ -79,8 +79,8 @@
 
         <KButton
           appearance="secondary"
-          :is-rounded="false"
-          data-testid="application-delete-cancel-button"
+          :is-rounded="true"
+          data-testid="application-create-cancel-button"
           @click="send('CLICKED_CANCEL')"
         >
           No
