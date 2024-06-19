@@ -172,7 +172,6 @@
 
       const postToHarness = (obj) => {
         client.post("/harness", obj).then((res) => {
-          console.log(res)
           useToaster().notify({
             appearance: 'success',
             message: res.data.result
