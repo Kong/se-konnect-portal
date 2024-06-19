@@ -5,8 +5,6 @@
         :title="($route.meta.title as string)"
         class="mb-5"
       />
-    </div>
-    <div>
       <form>
           <div class="mb-5">
             <KLabel for="clientAppCI">
@@ -109,7 +107,6 @@
     setup() {
         const $router = useRouter()
         const formData = ref(makeDefaultFormData())
-        var loadingFlag = null
         const client = axios.create({
           baseURL: useUalStore().kongGatewayBaseUrl,
           withCredentials: false,
@@ -148,10 +145,6 @@
 
       })
 
-      const isLoading = () => {
-        return loadingFlag
-      }
-
       const handleCancel = () => {
           $router.back()
       }
@@ -185,8 +178,7 @@
         handleCancel,
         handleCreate,
         formData,
-        handleConfirmCreate,
-        isLoading
+        handleConfirmCreate
       }
     }
   })
