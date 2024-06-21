@@ -160,14 +160,26 @@
           }).then((res) => {
           postToHarness(res)
           send('RESOVLED')
+        }, (rej) => {
+          send('CLICKED_CANCEL')
+          useToaster().notify({
+            appearance: 'danger',
+            message: rej
+        })
         })
       }
 
       const postToHarness = (obj) => {
-        client.post("/harness", obj).then((res) => {
+        client.post("/harness/gateway/pipeline/api/webhook/custom/v2", obj).then((res) => {
           useToaster().notify({
             appearance: 'success',
-            message: res.data.result
+            message: "Success"
+        })
+        }, (rej) => {
+          send('CLICKED_CANCEL')
+          useToaster().notify({
+            appearance: 'danger',
+            message: rej
         })
         })
       }
