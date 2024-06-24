@@ -173,7 +173,7 @@
         client.post("/harness/gateway/pipeline/api/webhook/custom/v2", obj).then((res) => {
           useToaster().notify({
             appearance: 'success',
-            message: "Success"
+            message: "Post to Harness succeeded. Please check the output of your pipeline for status."
         })
         }, (rej) => {
           send('CLICKED_CANCEL')
