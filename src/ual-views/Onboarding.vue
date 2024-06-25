@@ -154,7 +154,7 @@
       }
 
       const handleConfirmCreate = () => {
-        client.post("/oam/clientregistration", {
+        client.post("/onboarding/oam/registerccfclient", {
             "client-appci": formData.value.clientAppCI,
             "api-oam-domain": formData.value.oamDomain
           }).then((res) => {
