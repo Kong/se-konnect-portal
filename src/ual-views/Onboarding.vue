@@ -30,6 +30,18 @@
               class="k-input--full"
             />
           </div>
+          <div class="mb-5">
+            <KLabel for="consumerUrl">
+              Consumer URL<span class="text-danger">*</span>
+            </KLabel>
+            <KInput
+              id="consumerUrl"
+              v-model.trim="formData.consumerUrl"
+              data-testid="consumer-url-input"
+              type="text"
+              class="k-input--full"
+            />
+          </div>
           <div class="flex">
             <div class="flex-1">
               <KButton
@@ -119,6 +131,7 @@
           const returnObject = {
             clientAppCI: '',
             oamDomain: '',
+            consumerUrl: '',
           }
         return returnObject
       }
@@ -170,6 +183,7 @@
       }
 
       const postToHarness = (obj) => {
+        obj.consumerUrl = formData.value.consumerUrl
         client.post("/harness/gateway/pipeline/api/webhook/custom/v2", obj).then((res) => {
           useToaster().notify({
             appearance: 'success',
