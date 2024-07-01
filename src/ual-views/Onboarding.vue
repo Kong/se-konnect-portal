@@ -43,15 +43,15 @@
             />
           </div>
           <div class="mb-5">
-            <KLabel for="awsAccountNumber">
-              Consumer URL<span class="text-danger">*</span>
+            <KLabel for="environment">
+              Environment<span class="text-danger">*</span>
             </KLabel>
-            <KInput
-              id="awsAccountNumber"
-              v-model.trim="formData.awsAccountNumber"
-              data-testid="aws-account-number-input"
-              type="text"
-              class="k-input--full"
+            <KSelect
+
+              appearance="select"
+              v-model="formData.environment"
+              :items="[{ label: 'Development', value: 'dev' }, { label: 'QA', value: 'qa' },
+                      { label: 'Staging', value: 'stage' }, { label: 'Production', value: 'prod' }]"
             />
           </div>
           <div class="flex">
@@ -124,7 +124,6 @@
   import { useUalStore } from '@/ual-stores/app'
   import useToaster from '../composables/useToaster'
 
-
   export default defineComponent({
     name: 'OnboardingForm',
     components: { PageTitle },
@@ -144,7 +143,7 @@
             clientAppCI: '',
             oamDomain: '',
             consumerUrl: '',
-            awsAccountNumber: ''
+            environment: '' // env:dev/qa/stg
           }
         return returnObject
       }
@@ -170,6 +169,8 @@
       onMounted(async() => {
 
       })
+
+
 
       const handleCancel = () => {
           $router.back()
@@ -197,7 +198,9 @@
 
       const postToHarness = (obj) => {
         obj.consumerUrl = formData.value.consumerUrl
-        obj.awsAccountNumber = formData.value.awsAccountNumber
+        obj.environment = formData.value.environment
+
+        console.log(obj)
         client.post("/harness/gateway/pipeline/api/webhook/custom/v2", obj).then((res) => {
           useToaster().notify({
             appearance: 'success',
@@ -218,7 +221,7 @@
         handleCancel,
         handleCreate,
         formData,
-        handleConfirmCreate
+        handleConfirmCreate,
       }
     }
   })
