@@ -51,7 +51,7 @@
               appearance="select"
               v-model="formData.environment"
               :items="[{ label: 'Development', value: 'dev' }, { label: 'QA', value: 'qa' },
-                      { label: 'Staging', value: 'stage' }, { label: 'Production', value: 'prod' }]"
+                      { label: 'Staging', value: 'stage' }]"
             />
           </div>
           <div class="flex">
