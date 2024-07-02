@@ -235,8 +235,8 @@
 
         // TODO: fetch the org id based on ApplicationCI
         client.post("/harness/gateway/pipeline/api/webhook/custom/v2", obj).then((res) => {
-          clientId.value = res.data.clientID
-          clientSecret.value = res.data.clientSecret
+          clientId.value = obj.data.clientID
+          clientSecret.value = obj.data.clientSecret
 
           useToaster().notify({
             appearance: 'success',
