@@ -88,7 +88,7 @@
         {{ modalTitle }}
       </template>
       <template #body-content>
-        Do you wish create your application, {{ formData.oamDomain }} - {{ formData.oamDomain }}?
+        Do you wish create your application, {{ formData.clientAppCI }} - {{ formData.oamDomain }}?
       </template>
       <template #footer-content>
           <KButton
@@ -96,8 +96,7 @@
           appearance="creation"
           data-testid="application-create-confirm-button"
           class="mr-3"
-          @click="handleConfirmCreate"
-        >
+          @click="handleConfirmCreate">
           Yes
         </KButton>
 
@@ -108,6 +107,36 @@
           @click="send('CLICKED_CANCEL')"
         >
           No
+        </KButton>
+      </template>
+    </KModal>
+    <KModal
+          title="Application Created"
+          :is-visible="currentState.matches('success')"
+          data-testid="application-create-modal"
+          class="confirm-modal"
+        >
+      <template #header-content>
+        {{ modalTitle }}
+      </template>
+      <template #body-content>
+        <CopyButton
+          label="Client Id:"
+          :text-to-copy="clientId"
+        />
+        <CopyButton
+          label="Client Secret:"
+          :text-to-copy="clientSecret"
+        />
+      </template>
+      <template #footer-content>
+        <KButton
+          appearance="primary"
+          :is-rounded="true"
+          data-testid="application-create-success-button"
+          @click="send('CLICKED_CANCEL')"
+        >
+          OK
         </KButton>
       </template>
     </KModal>
@@ -123,10 +152,11 @@
   import axios from 'axios'
   import { useUalStore } from '@/ual-stores/app'
   import useToaster from '../composables/useToaster'
+  import CopyButton from '@/components/CopyButton.vue'
 
   export default defineComponent({
     name: 'OnboardingForm',
-    components: { PageTitle },
+    components: { PageTitle, CopyButton },
     setup() {
         const $router = useRouter()
         const formData = ref(makeDefaultFormData())
@@ -159,12 +189,15 @@
                 CLICKED_CREATE: 'pending'
               }
             },
-            pending: { on: { CLICKED_CANCEL: 'idle', RESOVLED: 'idle' } },
+            pending: { on: { CLICKED_CANCEL: 'idle', RESOVLED: 'success' } },
+            success: { on: { CLICKED_CANCEL: 'idle' } }
           }
         })
       )
 
       const modalTitle = `Create OAM Application`
+      const clientId = ref('')
+      const clientSecret = ref('')
 
       onMounted(async() => {
 
@@ -200,8 +233,11 @@
         obj.consumerUrl = formData.value.consumerUrl
         obj.environment = formData.value.environment
 
-        console.log(obj)
+        // TODO: fetch the org id based on ApplicationCI
         client.post("/harness/gateway/pipeline/api/webhook/custom/v2", obj).then((res) => {
+          clientId.value = res.data.clientID
+          clientSecret.value = res.data.clientSecret
+
           useToaster().notify({
             appearance: 'success',
             message: "Post to Harness succeeded. Please check the output of your pipeline for status."
@@ -222,6 +258,8 @@
         handleCreate,
         formData,
         handleConfirmCreate,
+        clientId,
+        clientSecret
       }
     }
   })
