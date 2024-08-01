@@ -85,6 +85,13 @@ export default defineComponent({
     --spacing-lg: var(--spacing-sm);
     // this is to fix the alignment of the text
     line-height: 24px !important;
+    color: white !important;
+
+    svg {
+      path {
+        stroke: white !important;
+      }
+    }
   }
 
   .k-button:focus,

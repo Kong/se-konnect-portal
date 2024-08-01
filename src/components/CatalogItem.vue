@@ -139,7 +139,7 @@ export default {
 
 <style lang="scss" scoped>
   .products-card-title {
-    color: var(--text_colors-accent);
+    color: #007A53;
     font-weight: 600;
     padding: 1.5rem 1rem;
     border-bottom: 1px solid var(--section_colors-stroke);

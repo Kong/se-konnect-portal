@@ -47,6 +47,7 @@ import { mapState, storeToRefs } from 'pinia'
 import { useI18nStore, useAppStore } from '@/stores'
 import NavDropdown from './NavDropdown.vue'
 import usePortalApi from '@/hooks/usePortalApi'
+import logo from '../assets/711logo.png'
 
 export default defineComponent({
   name: 'Nav',
@@ -64,7 +65,8 @@ export default defineComponent({
       window.location.href = logoutUrl
     }
     const { portalApiV2 } = usePortalApi()
-    const logoSrc = portalApiV2.value.getApiLink('/api/v2/portal/logo')
+    // const logoSrc = portalApiV2.value.getApiLink('/api/v2/portal/logo')
+    const logoSrc = logo
 
     return {
       logout,
@@ -90,14 +92,15 @@ export default defineComponent({
 
 #site-header {
   height: var(--headerHeight);
-  background-color: var(--section_colors-header);
+  background-color: #007A53;
   border-bottom: 1px solid var(--section_colors-stroke);
 
   .links a {
-    color: var(--text_colors-header);
+    color: white;
     &:hover{
       backdrop-filter: brightness(1.35);
     }
   }
+  
 }
 </style>
